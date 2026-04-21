@@ -175,8 +175,12 @@ body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--tx)
   </div>
   <div class="ag">
     <label>Cle API</label>
-    <input type="password" id="apiKey" class="api-inp" placeholder="sk-ant-... ou AIza...">
-    <div id="keyOk" class="key-ok">Cle enregistree - pret a utiliser</div>
+    <div style="display:flex;gap:6px;align-items:center">
+      <input type="password" id="apiKey" class="api-inp" placeholder="sk-ant-... ou AIza..." style="width:200px">
+      <button id="BTNsaveKey" style="padding:8px 14px;background:var(--bl);color:#fff;border:none;border-radius:10px;font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:800;cursor:pointer;transition:.2s;white-space:nowrap;text-transform:uppercase;letter-spacing:.5px">Valider</button>
+    </div>
+    <div id="keyOk" class="key-ok" style="display:none">&#10003; Cle validee et sauvegardee</div>
+    <div id="keyErr" style="display:none;align-items:center;gap:5px;background:var(--rll);border:1px solid var(--rlb);color:#991b1b;font-size:10px;font-weight:800;padding:4px 9px;border-radius:999px;margin-top:3px;font-family:'DM Mono',monospace">&#10005; Format invalide</div>
   </div>
 </div>
 <nav class="nav">
@@ -495,8 +499,17 @@ function init() {
   if (typeof marked !== "undefined") marked.setOptions({gfm:true, breaks:false});
   var k = localStorage.getItem(SKEY);
   if (k && k.length > 8) { document.getElementById("apiKey").value = k; showKeyOk(true); }
-  document.getElementById("apiKey").addEventListener("input", function() {
-    localStorage.setItem(SKEY, this.value); showKeyOk(this.value.length > 8);
+  document.getElementById("BTNsaveKey").addEventListener("click", function() {
+    var val = document.getElementById("apiKey").value.trim();
+    var provider = document.getElementById("provSel").value;
+    var valid = (provider === "claude" && val.startsWith("sk-ant-") && val.length > 20)
+             || (provider === "gemini" && val.startsWith("AIza") && val.length > 20);
+    if (!val) { showKeyOk(false); showKeyErr(false); alert("Entre ta cle API avant de valider."); return; }
+    if (valid) { localStorage.setItem(SKEY, val); showKeyOk(true); showKeyErr(false); }
+    else { showKeyOk(false); showKeyErr(true); }
+  });
+  document.getElementById("apiKey").addEventListener("keydown", function(e) {
+    if (e.key === "Enter") document.getElementById("BTNsaveKey").click();
   });
   updateModels();
   document.getElementById("provSel").addEventListener("change", updateModels);
@@ -514,7 +527,11 @@ function init() {
 
 function showKeyOk(yes) {
   var el = document.getElementById("keyOk");
-  if (yes) el.classList.add("show"); else el.classList.remove("show");
+  el.style.display = yes ? "inline-flex" : "none";
+}
+function showKeyErr(yes) {
+  var el = document.getElementById("keyErr");
+  el.style.display = yes ? "inline-flex" : "none";
 }
 
 function updateModels() {
