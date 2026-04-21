@@ -1,0 +1,971 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EVA V.10 ULTRA | Empire Video Factory</title>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700;800;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#f1f5f9;--sur:#fff;--s2:#f8fafc;--bdr:#e2e8f0;--b2:#f1f5f9;
+  --bl:#2563eb;--bll:#eff6ff;--blb:#bfdbfe;
+  --am:#f59e0b;--all:#fffbeb;--alb:#fde68a;
+  --gr:#059669;--grl:#f0fdf4;--grb:#86efac;
+  --re:#ef4444;--rll:#fef2f2;--rlb:#fca5a5;
+  --pu:#4f46e5;--dk:#0f172a;--tx:#1e293b;--mu:#64748b;--m2:#94a3b8}
+body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--tx)}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:3px}
+.api-bar{position:sticky;top:0;z-index:300;background:rgba(241,245,249,.97);border-bottom:1px solid var(--bdr);padding:10px 22px;display:flex;align-items:flex-end;gap:12px;flex-wrap:wrap;backdrop-filter:blur(16px)}
+.ag{display:flex;flex-direction:column;gap:3px}
+.ag label{font-size:9px;font-weight:900;color:var(--mu);text-transform:uppercase;letter-spacing:1px;font-family:'DM Mono',monospace}
+.api-sel,.mdl-sel{background:var(--sur);border:2px solid var(--bdr);border-radius:10px;color:var(--tx);font-family:'Space Grotesk',sans-serif;font-size:12px;font-weight:600;padding:8px 10px;outline:none;transition:.2s;cursor:pointer}
+.api-sel{width:190px}.mdl-sel{width:250px}
+.api-inp{background:var(--sur);border:2px solid var(--bdr);border-radius:10px;color:var(--tx);font-family:'Space Grotesk',sans-serif;font-size:12px;font-weight:600;padding:8px 10px;outline:none;transition:.2s;width:220px}
+.api-sel:focus,.mdl-sel:focus,.api-inp:focus{border-color:var(--bl)}
+.api-inp::placeholder{color:var(--m2);font-size:11px}
+.key-ok{display:none;align-items:center;gap:5px;background:var(--grl);border:1px solid var(--grb);color:#065f46;font-size:10px;font-weight:800;padding:4px 9px;border-radius:999px;margin-top:3px;font-family:'DM Mono',monospace}
+.key-ok.show{display:inline-flex}
+.nav{background:rgba(241,245,249,.97);border-bottom:1px solid var(--bdr);display:flex;align-items:center;justify-content:space-between;padding:0 22px;flex-wrap:wrap;gap:6px;backdrop-filter:blur(12px)}
+.nlogo{display:flex;align-items:center;gap:10px;padding:10px 0}
+.nicon{width:34px;height:34px;background:linear-gradient(135deg,var(--bl),#1d4ed8);border-radius:9px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:14px;font-style:italic;box-shadow:0 4px 12px rgba(37,99,235,.3)}
+.ntitle{font-size:15px;font-weight:900;letter-spacing:-.5px;line-height:1.1}
+.ntitle span{color:var(--bl)}
+.nsub{font-size:9px;color:var(--mu);font-family:'DM Mono',monospace;letter-spacing:.4px;margin-top:1px}
+.tabs{display:flex;gap:3px;padding:7px 0}
+.tab{padding:7px 13px;border:none;border-radius:9px;cursor:pointer;font-family:'Space Grotesk',sans-serif;font-size:12px;font-weight:700;transition:.2s;background:transparent;color:var(--mu);display:flex;align-items:center;gap:5px;white-space:nowrap}
+.tab:hover{background:var(--sur);color:var(--tx)}
+.tab.on{background:var(--bl);color:#fff;box-shadow:0 4px 12px rgba(37,99,235,.25)}
+.tdot{width:5px;height:5px;border-radius:50%;background:currentColor;opacity:.7}
+.panel{display:none;max-width:920px;margin:0 auto;padding:20px 18px 80px}
+.panel.on{display:block}
+.stack{display:flex;flex-direction:column;gap:14px}
+.card{background:var(--sur);border:1px solid var(--bdr);border-radius:16px;box-shadow:0 4px 16px -4px rgba(0,0,0,.06);padding:20px}
+.ctitle{font-size:10px;font-weight:900;color:var(--mu);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:12px;font-family:'DM Mono',monospace}
+.field{display:flex;flex-direction:column;gap:5px}
+.lbl{font-size:10px;font-weight:800;color:var(--mu);text-transform:uppercase;letter-spacing:1px;font-family:'DM Mono',monospace;display:flex;align-items:center;gap:6px}
+.badge{font-size:8px;padding:2px 6px;border-radius:999px;font-weight:900}
+.req{background:var(--rll);border:1px solid var(--rlb);color:var(--re)}
+.hot{background:#fff7ed;border:1px solid #fed7aa;color:#c2410c}
+.ai{background:var(--bll);border:1px solid var(--blb);color:var(--bl)}
+.inp,.txa{width:100%;border:2px solid var(--b2);border-radius:12px;padding:12px 14px;outline:none;transition:.25s;background:#fcfcfc;font-size:13px;color:var(--tx);font-family:'Space Grotesk',sans-serif}
+.inp:focus,.txa:focus{border-color:var(--bl);background:#fff;box-shadow:0 0 0 4px rgba(37,99,235,.06)}
+.inp::placeholder,.txa::placeholder{color:var(--m2);font-size:12px}
+.txa{resize:vertical}
+.inp-a{border-color:var(--alb);background:var(--all)}.inp-a:focus{border-color:var(--am)}
+.inp-b{border-color:var(--blb);background:var(--bll)}.inp-b:focus{border-color:var(--bl)}
+.hint{font-size:11px;color:var(--mu);margin-top:2px}
+.tip{font-size:11px;color:var(--am);font-weight:700;margin-top:2px}
+.divider{height:1px;background:var(--bdr);margin:4px 0}
+.btn{width:100%;padding:16px 20px;border:none;border-radius:13px;font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:900;text-transform:uppercase;letter-spacing:1.5px;cursor:pointer;transition:.35s;display:flex;align-items:center;justify-content:center;gap:10px}
+.btn-dk{background:linear-gradient(135deg,var(--dk),#1e3a5f);color:#fff;box-shadow:0 8px 24px rgba(15,23,42,.25)}
+.btn-dk:hover:not([disabled]){transform:translateY(-2px);box-shadow:0 14px 36px rgba(15,23,42,.3)}
+.btn-pu{background:linear-gradient(135deg,#7c3aed,var(--pu));color:#fff;box-shadow:0 8px 24px rgba(79,70,229,.25)}
+.btn-pu:hover:not([disabled]){transform:translateY(-2px)}
+.btn-te{background:linear-gradient(135deg,var(--gr),#0d9488);color:#fff;box-shadow:0 8px 24px rgba(5,150,105,.2)}
+.btn-te:hover:not([disabled]){transform:translateY(-2px)}
+.btn[disabled]{opacity:.55;cursor:not-allowed;transform:none!important}
+.sb{padding:7px 12px;border:none;border-radius:8px;cursor:pointer;font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:700;text-transform:uppercase;transition:.2s;display:inline-flex;align-items:center;gap:4px}
+.sb-bl{background:var(--bl);color:#fff}.sb-bl:hover{background:#1d4ed8}
+.sb-gr{background:var(--gr);color:#fff}.sb-gr:hover{background:#047857}
+.sb-gh{background:var(--s2);color:var(--mu);border:1px solid var(--bdr)}.sb-gh:hover{color:var(--tx)}
+.spin{width:18px;height:18px;border:2.5px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:sp .7s linear infinite;flex-shrink:0}
+@keyframes sp{to{transform:rotate(360deg)}}
+.trow{display:flex;align-items:center;gap:8px}
+.ttrack{width:42px;height:22px;border-radius:999px;background:#e2e8f0;border:2px solid #e2e8f0;cursor:pointer;position:relative;transition:.3s;flex-shrink:0}
+.tthumb{width:14px;height:14px;border-radius:50%;background:#fff;position:absolute;top:2px;left:2px;transition:.3s cubic-bezier(.34,1.56,.64,1);box-shadow:0 1px 3px rgba(0,0,0,.15)}
+.ttrack.tg{background:var(--gr);border-color:var(--gr)}.ttrack.tg .tthumb{transform:translateX(19px)}
+.ttrack.tp{background:var(--pu);border-color:var(--pu)}.ttrack.tp .tthumb{transform:translateX(19px)}
+.tlbl{font-size:11px;font-weight:800;text-transform:uppercase;color:#cbd5e1;transition:.3s;letter-spacing:.7px}
+.tlbl.tg{color:var(--gr)}.tlbl.tp{color:var(--pu)}
+.mpill{display:none;padding:2px 6px;border-radius:999px;font-size:9px;font-weight:900;text-transform:uppercase}
+.mpill.sg{display:inline-block;background:var(--grl);color:#065f46;border:1px solid var(--grb)}
+.mpill.sp{display:inline-block;background:#ede9fe;color:#3730a3;border:1px solid #c4b5fd}
+.lang-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:7px}
+@media(max-width:560px){.lang-grid{grid-template-columns:repeat(3,1fr)}}
+.lbtn,.fbtn{padding:9px 6px;border:2px solid var(--bdr);border-radius:9px;background:var(--sur);color:var(--mu);font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:700;cursor:pointer;transition:.2s;text-align:center}
+.lbtn.on,.fbtn.on{border-color:var(--bl);background:var(--bll);color:var(--bl)}
+.frow{display:flex;gap:8px}
+.fbtn{padding:11px 16px}
+.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(175px,1fr));gap:9px;margin-bottom:10px}
+.pc{border:2px solid var(--bdr);border-radius:11px;padding:12px;cursor:pointer;transition:.2s;background:var(--sur);position:relative}
+.pc:hover{border-color:var(--bl)}.pc.on{border-color:var(--bl);background:var(--bll)}
+.pc-name{font-size:13px;font-weight:800;color:var(--tx)}
+.pc-niche{font-size:11px;color:var(--mu);margin-top:2px}
+.pc-del{position:absolute;top:7px;right:7px;width:18px;height:18px;border-radius:50%;background:var(--rll);color:var(--re);border:none;cursor:pointer;font-size:10px;display:none;align-items:center;justify-content:center;font-weight:900}
+.pc:hover .pc-del{display:flex}
+.padd{border:2px dashed var(--b2);border-radius:11px;padding:12px;cursor:pointer;transition:.2s;display:flex;align-items:center;justify-content:center;gap:6px;font-size:13px;font-weight:700;color:var(--mu);background:transparent;font-family:'Space Grotesk',sans-serif;width:100%}
+.padd:hover{border-color:var(--bl);color:var(--bl)}
+.cbox{background:var(--bll);border:1.5px solid var(--blb);border-radius:13px;padding:16px;margin-top:9px}
+.cbox.diag{background:#f5f3ff;border-color:#c4b5fd}
+.cbox.amb{background:var(--all);border-color:var(--alb)}
+.cbox.grn{background:var(--grl);border-color:var(--grb)}
+.apbar{background:var(--bll);border:1.5px solid var(--blb);border-radius:11px;padding:9px 14px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.rcard{background:var(--sur);border:1px solid var(--bdr);border-radius:16px;border-top:4px solid var(--bl);box-shadow:0 8px 24px -4px rgba(0,0,0,.07);animation:fu .4s ease;overflow:hidden}
+@keyframes fu{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.rhead{padding:13px 20px;border-bottom:1px solid var(--bdr);background:var(--s2);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:7px}
+.rmeta{display:flex;align-items:center;gap:5px;flex-wrap:wrap}
+.pill{padding:3px 8px;border-radius:999px;font-size:9px;font-weight:900;text-transform:uppercase;display:inline-flex;align-items:center}
+.pb{background:var(--bll);border:1px solid var(--blb);color:var(--bl)}
+.pg{background:var(--grl);border:1px solid var(--grb);color:#065f46}
+.pa{background:#fff7ed;border:1px solid #fed7aa;color:#c2410c}
+.pp{background:#ede9fe;border:1px solid #c4b5fd;color:#3730a3}
+.rbody{padding:20px}
+.prose{line-height:1.85}
+.prose h1{font-weight:900;text-transform:uppercase;color:var(--bl);border-bottom:3px solid var(--bl);padding-bottom:8px;margin:0 0 1.4rem;font-size:1.2rem}
+.prose h2{font-weight:800;text-transform:uppercase;color:var(--dk);margin:1.7rem 0 .5rem;font-size:.95rem}
+.prose h2::before{content:'';display:inline-block;width:3px;height:13px;background:var(--bl);border-radius:2px;margin-right:8px;vertical-align:middle}
+.prose h3{font-weight:800;text-transform:uppercase;margin:1.2rem 0 .4rem;color:var(--tx);border-left:3px solid var(--bl);padding-left:8px;font-size:.83rem}
+.prose p{margin:.5rem 0;font-size:13px;color:#334155}
+.prose ul{margin:.4rem 0 .4rem 1.2rem}
+.prose li{margin:.2rem 0;font-size:13px;color:#334155;line-height:1.7}
+.prose strong{font-weight:800;color:var(--dk)}
+.prose blockquote{border-left:3px solid #cbd5e1;padding:8px 12px;color:var(--mu);background:var(--s2);border-radius:0 7px 7px 0;margin:.7rem 0;font-size:12.5px}
+.prose code{background:var(--s2);padding:2px 5px;border-radius:4px;font-family:'DM Mono',monospace;font-size:11px;color:var(--dk)}
+.prose table{width:100%;border-collapse:separate;border-spacing:0;margin:1.2rem 0;font-size:12px;border-radius:11px;overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,.06);border:1px solid var(--bdr)}
+.prose thead{background:var(--dk)}
+.prose thead th{padding:10px 12px;text-align:left;font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:1.2px;color:#94a3b8;border:none}
+.prose thead th:first-child{color:#60a5fa}
+.prose tbody tr:nth-child(even){background:var(--s2)}.prose tbody tr:nth-child(odd){background:#fff}
+.prose tbody tr:hover{background:var(--bll)}
+.prose tbody td{padding:10px 12px;vertical-align:top;border-top:1px solid var(--b2);font-size:12px;color:#334155;line-height:1.6}
+.prose tbody td:first-child{font-weight:800;font-family:'DM Mono',monospace;color:var(--bl);font-size:11px;white-space:nowrap;border-right:1px solid var(--b2);min-width:65px}
+.ebox{background:var(--rll);border:1.5px solid var(--rlb);border-radius:11px;padding:12px 15px;color:#991b1b;font-size:12px;font-weight:600;display:flex;align-items:flex-start;gap:7px;margin-top:8px}
+.ebox pre{white-space:pre-wrap;margin:0;font-family:inherit;font-size:11.5px}
+.gbanner{background:linear-gradient(135deg,var(--dk),#1e3a5f);border-radius:14px;padding:13px 17px;display:flex;align-items:center;justify-content:space-between;gap:9px;flex-wrap:wrap}
+.gbanner h3{font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:1px;color:#fff;margin-bottom:1px}
+.gbanner p{font-size:10px;color:#94a3b8}
+.btn-pdf{background:var(--bl);color:#fff;padding:8px 14px;border-radius:9px;font-weight:800;font-size:11px;border:none;cursor:pointer;display:flex;align-items:center;gap:5px;text-transform:uppercase;transition:.2s;white-space:nowrap}
+.btn-pdf:hover{background:#1d4ed8;transform:translateY(-1px)}
+.mtrack{background:linear-gradient(135deg,#fef3c7,#fffbeb);border:1.5px solid #fcd34d;border-radius:14px;padding:16px}
+.mtitle{font-size:10px;font-weight:900;color:#92400e;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:11px;font-family:'DM Mono',monospace}
+.mgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}
+@media(max-width:480px){.mgrid{grid-template-columns:1fr}}
+.mitem{background:#fff;border-radius:9px;padding:12px;border:1px solid #fde68a}
+.mlbl{font-size:9px;font-weight:900;color:#92400e;text-transform:uppercase;letter-spacing:.8px;margin-bottom:4px}
+.mbg{height:6px;background:#fde68a;border-radius:3px;overflow:hidden;margin:5px 0}
+.mfill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--am),#d97706);transition:width .8s ease}
+.mval{font-size:19px;font-weight:900;color:var(--dk);line-height:1}
+.msub{font-size:10px;color:var(--mu);margin-top:1px}
+.mpct{font-size:10px;font-weight:800;color:#d97706}
+.tpl-box{background:linear-gradient(135deg,#fff7ed,var(--all));border:1.5px solid #fed7aa;border-radius:13px;padding:15px}
+.tpl-title{font-size:10px;font-weight:900;color:#92400e;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:8px;font-family:'DM Mono',monospace}
+.tpl-card{background:#fff;border:1.5px solid #fde68a;border-radius:9px;padding:11px;margin-bottom:7px;cursor:pointer;transition:.2s}
+.tpl-card:last-child{margin-bottom:0}
+.tpl-card:hover{border-color:var(--am);box-shadow:0 4px 12px rgba(245,158,11,.15);transform:translateY(-1px)}
+.tpl-card h4{font-size:12px;font-weight:800;color:var(--dk);margin-bottom:3px}
+.tpl-card p{font-size:11px;color:var(--mu);line-height:1.5}
+.tpl-ex{font-size:11px;color:var(--bl);font-weight:700;margin-top:4px;font-family:'DM Mono',monospace;background:var(--bll);padding:5px 8px;border-radius:6px;display:block}
+.mono-type-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.mono-type-btn{padding:8px 14px;border:2px solid var(--bdr);border-radius:9px;background:var(--sur);color:var(--mu);font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:700;cursor:pointer;transition:.2s}
+.mono-type-btn.on{border-color:var(--am);background:var(--all);color:#92400e}</style>
+</head>
+<body>
+
+<div class="api-bar">
+  <div class="ag">
+    <label>Fournisseur IA</label>
+    <select id="provSel" class="api-sel">
+      <option value="claude">Claude (Anthropic)</option>
+      <option value="gemini">Gemini (Google)</option>
+    </select>
+  </div>
+  <div class="ag">
+    <label>Modele</label>
+    <select id="mdlSel" class="mdl-sel"></select>
+  </div>
+  <div class="ag">
+    <label>Cle API</label>
+    <input type="password" id="apiKey" class="api-inp" placeholder="sk-ant-... ou AIza...">
+    <div id="keyOk" class="key-ok">Cle enregistree - pret a utiliser</div>
+  </div>
+</div>
+<nav class="nav">
+  <div class="nlogo">
+    <div class="nicon">E</div>
+    <div>
+      <div class="ntitle">EVA <span>V.10</span> ULTRA</div>
+      <div class="nsub">EMPIRE VIDEO FACTORY - VIRALITE ET MONETISATION</div>
+    </div>
+  </div>
+  <div class="tabs">
+    <button class="tab on" id="TABgen"><span class="tdot"></span> Generation</button>
+    <button class="tab" id="TABcoach"><span class="tdot"></span> Coach IA</button>
+    <button class="tab" id="TABdiag"><span class="tdot"></span> Diagnostic</button>
+    <button class="tab" id="TABmono"><span class="tdot"></span> Monetisation</button>
+    <button class="tab" id="TABguide"><span class="tdot"></span> Guide</button>
+  </div>
+</nav>
+
+<div id="PANgen" class="panel on">
+<div class="stack">
+  <div id="apbar" class="apbar" style="display:none">
+    <span style="font-size:10px;font-weight:900;color:var(--bl);text-transform:uppercase;font-family:'DM Mono',monospace">Profil actif :</span>
+    <span id="apname" style="font-size:13px;font-weight:700;color:var(--dk)"></span>
+    <button class="sb sb-gh" id="BTNchangeProfile">Changer de profil</button>
+  </div>
+  <div class="tpl-box">
+    <div class="tpl-title">3 Templates de Succes - Les formules qui font exploser les vues</div>
+    <div style="font-size:11px;color:#92400e;margin-bottom:10px">Les videos qui cartonnent sur YouTube ont toutes 3 points communs : <strong>un chiffre concret + un resultat vecu + une promesse de transformation immediate</strong>. Ces 3 templates encodent cette formule. Clique pour pre-remplir automatiquement les 6 cases.</div>
+    <div class="tpl-card" id="TPL0">
+      <h4>Modele 1 - La Preuve par les Chiffres</h4>
+      <p>Le format le plus puissant sur YouTube. Tu montres un resultat reel obtenu avec une methode precise. Le spectateur voit la preuve avant meme de cliquer.</p>
+      <span class="tpl-ex">J ai obtenu [RESULTAT CHIFFRE] en [DUREE] grace a [METHODE] - voici exactement comment</span>
+    </div>
+    <div class="tpl-card" id="TPL1">
+      <h4>Modele 2 - L Analyse d Expert</h4>
+      <p>Tu as teste, analyse ou decortique quelque chose a la place de ton audience. Tu livres les conclusions directement. Ce format batit une autorite immediable.</p>
+      <span class="tpl-ex">J ai analyse [SUJET/OUTIL] pendant [DUREE] - voici ce que personne ne te dit ([CHIFFRE] de difference)</span>
+    </div>
+    <div class="tpl-card" id="TPL2">
+      <h4>Modele 3 - L Ordre Radical</h4>
+      <p>Tu interpelles directement ton audience sur une erreur couteuse qu elle fait, et tu offres une solution meilleure et souvent gratuite. Le format qui provoque le plus de clics.</p>
+      <span class="tpl-ex">ARRETEZ de [MAUVAISE PRATIQUE] - Faites plutot [SOLUTION] en [DUREE] (resultats prouves)</span>
+    </div>
+  </div>
+  <div class="gbanner">
+    <div><h3>Guide de demarrage rapide</h3><p>Modules - Templates - Architecture 12 blocs - Nano Banana - Anti-ban - Monetisation</p></div>
+    <button class="btn-pdf" id="BTNdlGuide1">Telecharger PDF</button>
+  </div>
+  <div class="card">
+    <div class="ctitle">Langue de production</div>
+    <div class="lang-grid">
+      <button class="lbtn on" id="LANG_Francais">Francais</button>
+      <button class="lbtn" id="LANG_English">English</button>
+      <button class="lbtn" id="LANG_Espanol">Espanol</button>
+      <button class="lbtn" id="LANG_Deutsch">Deutsch</button>
+      <button class="lbtn" id="LANG_Arabe">Arabe</button>
+      <button class="lbtn" id="LANG_Wolof">Wolof</button>
+    </div>
+  </div>
+  <div class="card stack">
+    <div class="field">
+      <div class="lbl">01 - Titre ou angle de la video <span class="badge req">REQUIS</span></div>
+      <input id="f1" class="inp" style="font-weight:700" placeholder="Ex : J ai genere 1200 euros en 21 jours avec cette methode IA gratuite (preuve a l appui)">
+    </div>
+    <div class="field">
+      <div class="lbl">02 - Mots-cles SEO cibles</div>
+      <input id="f2" class="inp" placeholder="Ex : youtube automation 2026, ia gratuite monetisation, gagner argent youtube sans visage...">
+    </div>
+    <div class="field">
+      <div class="lbl">03 - Idees brutes ou transcript source</div>
+      <textarea id="f3" class="txa" rows="5" style="height:110px" placeholder="Colle tes idees, notes, points cles ou transcript d une video source. Laisse vide pour partir de zero - EVA genere tout."></textarea>
+    </div>
+    <div class="field">
+      <div class="lbl">04 - Contexte de ta chaine <span class="badge ai">Auto-rempli si profil actif</span></div>
+      <textarea id="f4" class="txa inp-b" rows="3" style="height:78px" placeholder="Ex : Chaine YouTube automation IA, 15K abonnes, audience francophone, niche outils gratuits en ligne, objectif monetisation..."></textarea>
+    </div>
+    <div class="field">
+      <div class="lbl">05 - Ton audience cible <span class="badge hot">LE PLUS PUISSANT</span></div>
+      <textarea id="f5" class="txa inp-a" rows="4" style="height:96px" placeholder="Ex : Createurs de contenu 20-40 ans, debutants ou intermediaires. Probleme : peu de vues malgre beaucoup d efforts. Reve : vivre de YouTube. Peur : echouer, perdre du temps. Vocabulaire : tuto gratuit, sans visage, methode simple, resultats rapides..."></textarea>
+      <div class="tip">Ce champ transforme un script generique en script magnetique calibre pour ton audience exacte</div>
+    </div>
+    <div class="field">
+      <div class="lbl">06 - Video vers laquelle rediriger a la fin</div>
+      <input id="f6" class="inp" placeholder="Titre d une autre video de ta chaine - EVA inserera une redirection naturelle a la fin du script">
+      <div class="hint">Ideal pour enchaider les vues et augmenter ton watchtime global</div>
+    </div>
+    <div class="divider"></div>
+    <div class="field">
+      <div class="lbl">Format video</div>
+      <div class="frow">
+        <button class="fbtn on" id="BTNshort">Short / Reel 9:16</button>
+        <button class="fbtn" id="BTNlong">Video longue 10-15 min 16:9</button>
+      </div>
+    </div>
+    <div class="field">
+      <div class="lbl">Modes speciaux</div>
+      <div style="display:flex;align-items:center;gap:15px;flex-wrap:wrap">
+        <div class="trow">
+          <div class="ttrack" id="TRKfoot"><div class="tthumb"></div></div>
+          <span class="tlbl" id="LBLfoot">Football</span>
+          <span class="mpill" id="PILLfoot">ON</span>
+        </div>
+        <div class="trow">
+          <div class="ttrack" id="TRKnarr"><div class="tthumb"></div></div>
+          <span class="tlbl" id="LBLnarr">Narration</span>
+          <span class="mpill" id="PILLnarr">ON</span>
+        </div>
+        <label style="display:flex;align-items:center;gap:6px;background:var(--s2);padding:8px 11px;border-radius:9px;border:1.5px dashed var(--bdr);cursor:pointer;font-size:11px;font-weight:800;text-transform:uppercase;color:var(--mu);margin-left:auto">
+          <input type="checkbox" id="optAnge" style="width:13px;height:13px;accent-color:var(--bl)"> Ange Viral
+        </label>
+      </div>
+    </div>
+    <button class="btn btn-dk" id="BTNgenerate">
+      <svg id="genIcon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+      <span id="genTxt">Generer le Pack Complet</span>
+    </button>
+  </div>
+  <div id="genOut" class="stack"></div>
+</div>
+</div>
+
+<div id="PANcoach" class="panel">
+<div class="stack">
+  <div class="card">
+    <div class="ctitle">Mes profils de chaine</div>
+    <div style="background:var(--bll);border:1.5px solid var(--blb);border-radius:11px;padding:14px;margin-bottom:12px">
+      <p style="font-size:12px;color:#1e40af;line-height:1.7"><strong>A quoi servent les profils ?</strong> Un profil sauvegarde toutes tes informations de chaine : niche, audience, meilleures videos, statut monetisation. Une fois enregistre, il auto-remplit les cases 04 et 05 a chaque generation. Si tu geres plusieurs chaines, cree un profil par chaine et bascule entre eux en un clic. Le Coach IA utilise ton profil pour personaliser ses analyses et recommendations.</p>
+    </div>
+    <div id="pgrid" class="pgrid"></div>
+    <button class="padd" id="BTNaddProfile">+ Creer un nouveau profil de chaine</button>
+  </div>
+  <div id="pform" class="card stack" style="display:none">
+    <div class="ctitle">Nouveau profil de chaine</div>
+    <div class="field"><div class="lbl">Nom du profil</div><input id="pn" class="inp" placeholder="Ex : Ma Chaine Principale - Tech IA"></div>
+    <div class="field"><div class="lbl">Niche et sujet principal</div><input id="pniche" class="inp" placeholder="Ex : YouTube Automation IA, outils gratuits, revenus en ligne pour debutants"></div>
+    <div class="field"><div class="lbl">Meilleures videos (titres + nombre de vues)</div><textarea id="pbest" class="txa" rows="4" style="height:90px" placeholder="Video 1 - titre exact - X vues&#10;Video 2 - titre exact - X vues&#10;Video 3 - titre exact - X vues"></textarea></div>
+    <div class="field"><div class="lbl">Ton audience cible (problemes, peurs, reves, vocabulaire)</div><textarea id="paud" class="txa inp-a" rows="3" style="height:80px" placeholder="Age, situation, probleme principal, ce qu ils veulent accomplir, leurs peurs, les mots qu ils utilisent..."></textarea></div>
+    <div class="field"><div class="lbl">Tes 3 piliers thematiques</div><input id="ppil" class="inp" placeholder="Ex : Outils IA gratuits - Automation YouTube - Revenus en ligne sans investissement"></div>
+    <div class="field"><div class="lbl">Statut monetisation actuel</div><input id="pmono" class="inp" placeholder="Ex : 8K abonnes, 600h watchtime, pas encore monetise - ou : monetise depuis 3 mois, 250 euros/mois"></div>
+    <div style="display:flex;gap:7px">
+      <button class="sb sb-bl" id="BTNsaveProfile">Enregistrer ce profil</button>
+      <button class="sb sb-gh" id="BTNcancelProfile">Annuler</button>
+    </div>
+  </div>
+  <div class="card stack">
+    <div class="ctitle">Coach IA - Valider un sujet avant de generer</div>
+    <div class="cbox amb">
+      <p style="font-size:12px;color:#78350f;line-height:1.7"><strong>Comment utiliser le Coach IA :</strong> Avant de remplir les 6 cases, soumets ton idee de sujet ici. Le Coach analyse son potentiel viral sur une echelle de 1 a 10, identifie l angle le plus puissant selon ton profil, et auto-remplit les 6 cases avec les informations optimales. Tu n as plus qu a cliquer sur Generer. Cela evite de produire des videos sur des sujets qui ne percera pas.</p>
+    </div>
+    <div class="field">
+      <div class="lbl">Ton idee de sujet <span class="badge ai">Analyse par Coach IA</span></div>
+      <input id="csubj" class="inp inp-b" placeholder="Ex : Comment automatiser la creation de videos YouTube avec l IA sans montrer son visage...">
+    </div>
+    <button class="btn btn-pu" id="BTNcoach">
+      <svg id="coachIcon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5M2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+      <span id="coachTxt">Analyser le potentiel viral + Calibrer les 6 cases</span>
+    </button>
+    <div id="coachOut"></div>
+  </div>
+</div>
+</div>
+
+<div id="PANdiag" class="panel">
+<div class="stack">
+  <div class="card stack">
+    <div class="ctitle">Diagnostic complet de chaine + 10 sujets viraux</div>
+    <div class="cbox grn">
+      <p style="font-size:12px;color:#065f46;line-height:1.7"><strong>Comment utiliser le Diagnostic :</strong> Colle ici toutes tes donnees de chaine - nombre d abonnes, vues, tes meilleures videos et celles qui n ont pas marche, ta niche. EVA identifie les 3 vrais problemes qui bloquent ta croissance, analyse pourquoi certaines videos marchent et d autres non, puis te propose 10 sujets viraux notes de 1 a 10 avec un plan d action sur 30 jours.</p>
+    </div>
+    <div class="field">
+      <div class="lbl">Donnees de ta chaine</div>
+      <textarea id="diagIn" class="txa" rows="12" style="height:220px" placeholder="Chaine : [Nom de ta chaine]&#10;Abonnes : [nombre]&#10;Videos publiees : [nombre]&#10;Vues cumulees : [nombre]&#10;Statut monetisation : [monetise ou pas encore, combien il manque]&#10;&#10;Meilleures videos (titre - vues) :&#10;- ...&#10;- ...&#10;&#10;Videos qui n ont pas marche (titre - vues) :&#10;- ...&#10;- ...&#10;&#10;Niche et audience cible : [decris ta niche et ton audience]"></textarea>
+    </div>
+    <button class="btn btn-te" id="BTNdiag">
+      <svg id="diagIcon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <span id="diagTxt">Lancer le diagnostic complet</span>
+    </button>
+    <div id="diagOut"></div>
+  </div>
+</div>
+</div>
+
+<div id="PANmono" class="panel">
+<div class="stack">
+  <div class="mtrack">
+    <div class="mtitle">Tracker de Monetisation YouTube</div>
+    <div class="mgrid">
+      <div class="mitem">
+        <div class="mlbl">Abonnes</div>
+        <div class="mval" id="msubsval">-</div>
+        <div class="msub">Requis : 1 000</div>
+        <div class="mbg"><div class="mfill" id="msubsbar" style="width:0%"></div></div>
+        <div class="mpct" id="msubspct">Entre tes abonnes ci-dessous</div>
+      </div>
+      <div class="mitem">
+        <div class="mlbl">Watchtime (heures)</div>
+        <div class="mval" id="mwval">0h</div>
+        <div class="msub">Requis : 4 000h sur 12 mois</div>
+        <div class="mbg"><div class="mfill" id="mwbar" style="width:0%"></div></div>
+        <div class="mpct" id="mwpct">Entre tes heures ci-dessous</div>
+      </div>
+      <div class="mitem">
+        <div class="mlbl">Vues Shorts OU longues</div>
+        <div class="mval" id="msval">0</div>
+        <div class="msub" id="msub-label">Requis Shorts : 10M / 90j</div>
+        <div class="mbg"><div class="mfill" id="msbar" style="width:0%"></div></div>
+        <div class="mpct" id="mspct">Selectionne le type ci-dessous</div>
+      </div>
+      <div class="mitem">
+        <div class="mlbl">Statut global</div>
+        <div class="mval" id="monoStatus" style="font-size:14px;color:var(--am)">En cours</div>
+        <div class="msub">Analyse basee sur tes chiffres</div>
+        <div id="monoStatusDetail" style="margin-top:6px;font-size:11px;color:var(--mu);line-height:1.5">Entre tes stats pour voir ton plan.</div>
+      </div>
+    </div>
+  </div>
+  <div class="card stack">
+    <div class="ctitle">Mettre a jour mes statistiques</div>
+    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px">
+      <div class="field"><div class="lbl">Nombre d abonnes actuels</div><input id="msubsInp" class="inp" type="number" placeholder="Ex : 8500"></div>
+      <div class="field"><div class="lbl">Heures watchtime actuelles</div><input id="mwInp" class="inp" type="number" placeholder="Ex : 1200"></div>
+    </div>
+    <div class="field">
+      <div class="lbl">Type de contenu que tu publies</div>
+      <div class="mono-type-row">
+        <button class="mono-type-btn on" id="MTYPEshorts">Shorts principalement</button>
+        <button class="mono-type-btn" id="MTYPElong">Videos longues principalement</button>
+        <button class="mono-type-btn" id="MTYPEboth">Les deux</button>
+      </div>
+    </div>
+    <div id="monoViewsField" class="field">
+      <div class="lbl" id="monoViewsLabel">Vues Shorts sur les 90 derniers jours</div>
+      <input id="msInp" class="inp" type="number" placeholder="Ex : 250000">
+      <div class="hint" id="monoViewsHint">Pour les Shorts : requis 10 millions de vues sur 90 jours. Pour les videos longues : le watchtime est le critere principal.</div>
+    </div>
+    <div id="monoCalc" class="cbox amb" style="display:none"></div>
+    <button class="btn btn-pu" id="BTNmonoPlan">Generer mon plan de monetisation personnalise</button>
+    <div id="monoOut"></div>
+  </div>
+</div>
+</div>
+
+<div id="PANguide" class="panel">
+<div class="stack">
+  <div class="gbanner">
+    <div><h3>Guide complet EVA V.10 ULTRA</h3><p>Modules - Templates - Architecture - Anti-ban - Nano Banana - Test A/B - Monetisation</p></div>
+    <button class="btn-pdf" id="BTNdlGuide2">Telecharger PDF</button>
+  </div>
+  <div class="card prose">
+    <h1>EVA V.10 ULTRA - Guide complet</h1>
+    <h2>Pourquoi EVA V.10 ULTRA existe</h2>
+    <p>Trop de createurs publient des dizaines ou des centaines de videos pour obtenir des resultats decevants. Ce n est pas un probleme de talent, de materiel ou de quantite. C est un probleme de strategie. Les videos qui explosent ont toutes une structure precise : une preuve chiffree avant toute explication, une identification emotionnelle immediate avec l audience, et des boucles de retention actives toutes les 90 secondes. EVA V.10 ULTRA encode cette structure sur chaque video que tu generes.</p>
+    <h2>Les 3 formules qui font exploser les vues</h2>
+    <p><strong>Formule 1 - La Preuve par les Chiffres</strong> : Tu montres un resultat reel avec une methode precise. Exemple : J ai obtenu 1200 euros en 21 jours grace a cette methode IA gratuite. Le chiffre cree la credibilite, la duree cree l urgence, la methode cree la curiosite.</p>
+    <p><strong>Formule 2 - L Analyse d Expert</strong> : Tu as fait le travail de recherche a la place de ton audience. Exemple : J ai teste 8 outils IA pendant 30 jours - voici le seul qui vaut la peine. Ce format batit une autorite immediate et repond a une question que tout le monde se pose.</p>
+    <p><strong>Formule 3 - L Ordre Radical</strong> : Tu identifies une mauvaise pratique courante et tu proposes une alternative superieure. Exemple : ARRETEZ de payer pour des voix off - cette IA le fait gratuitement en 3 minutes. Ce format provoque le plus de clics parce qu il interpelle directement.</p>
+    <h2>Les 5 modules d EVA V.10 ULTRA</h2>
+    <p><strong>Generation</strong> - Ton espace de travail principal. Remplis les 6 cases, choisis le format et clique Generer. Tu obtiens : 3 titres optimises avec 3 briefs miniatures precis pour Nano Banana Pro, script voix-off complet en 12 blocs avec boucles de retention, storyboard visuel, description SEO complete avec chapitres horodates, tableau recapitulatif pour le test A/B natif YouTube, fiche de lancement avec heure de publication et actions post-publication.</p>
+    <p><strong>Coach IA</strong> - Avant de remplir les cases, soumets ton sujet ici. Le Coach note son potentiel viral de 1 a 10, identifie l angle le plus puissant, et remplit automatiquement les 6 cases avec les informations optimales. Evite de perdre du temps sur des sujets qui ne perceront pas.</p>
+    <p><strong>Diagnostic</strong> - Colle tes donnees de chaine. EVA identifie les 3 vrais problemes qui bloquent ta croissance, analyse tes meilleures et pires videos, et propose 10 sujets viraux notes avec un plan d action 30 jours.</p>
+    <p><strong>Monetisation</strong> - Tracker en temps reel de tes abonnes, heures watchtime et vues. Calcul du nombre exact de videos necessaires. Plan personnalise 12 semaines adapte a ton type de contenu.</p>
+    <p><strong>Guide</strong> - Ce guide complet. Telecharge le PDF pour l avoir hors ligne.</p>
+    <h2>Architecture 12 blocs - Video longue virale</h2>
+    <p>BLOC 1 Hook et Preuve 0:00-0:20 : Preuve visible en 8 secondes maximum, avant toute explication. Zero bonjour. Premiere phrase egale au titre. BLOC 2 Autorite 0:20-0:45 : Chiffres concrets uniquement. BLOC 3 Identification emotionnelle 0:45-1:10 : Le spectateur pense c est exactement moi. BLOC 4 CTA precoce 1:10-1:30 : Action de valeur concrete. BLOC 5 Annonce structure 1:30-1:50 : Les X points - je commence par le plus contre-intuitif. BLOCS 6-10 Chapitres : Titre fort, probleme, explication avec chiffres, application, micro-cliffhanger. Boucle de retention toutes les 90 secondes. BLOC 11 Synthese : 3 bullets percutants. BLOC 12 CTA Final et Redirection : Jamais merci d avoir regarde.</p>
+    <h2>Test A/B natif YouTube</h2>
+    <p>YouTube permet de publier 3 titres et 3 miniatures simultanement. L algorithme teste chaque angle sur une portion de ton audience et declare le gagnant apres 72 heures selon le CTR reel. Si aucun angle ne depasse 4% de CTR a 72 heures, garde le gagnant relatif et change uniquement le texte de la miniature.</p>
+    <h2>Brief miniature pour Nano Banana Pro</h2>
+    <p>EVA genere un brief precis et actionnable pour chaque angle : style visuel global, fond et ambiance, position du visage avec le pourcentage de surface occupe minimum 40%, expression precise et exageree, texte exact maximum 5 mots avec couleur et position, element graphique additionnel, validation de la lisibilite sur mobile. Colle ce brief directement dans Nano Banana Pro.</p>
+    <h2>Monetisation YouTube - Les conditions</h2>
+    <p>Pour les videos longues : 1 000 abonnes et 4 000 heures de watchtime sur les 12 derniers mois. Pour les Shorts : 1 000 abonnes et 10 millions de vues sur les 90 derniers jours. Le watchtime des videos longues se cumule progressivement. Chaque video bien executee avec 50% de taux de retention genere en moyenne 45 minutes de watchtime. Avec 2 videos par semaine bien structurees avec EVA : l objectif peut etre atteint en 3 a 6 mois selon ton point de depart.</p>
+  </div>
+</div>
+</div>
+<script>
+"use strict";
+var EVA = (function() {
+
+var PDF_B64 = ["JVBERi0xLjQKJZOMi54gUmVwb3J0TGFiIEdlbmVyYXRlZCBQREYgZG9jdW1lbnQgKG9wZW5zb3VyY2Up","CjEgMCBvYmoKPDwKL0YxIDIgMCBSIC9GMiAzIDAgUiAvRjMgNCAwIFIKPj4KZW5kb2JqCjIgMCBvYmoK","PDwKL0Jhc2VGb250IC9IZWx2ZXRpY2EgL0VuY29kaW5nIC9XaW5BbnNpRW5jb2RpbmcgL05hbWUgL0Yx","IC9TdWJ0eXBlIC9UeXBlMSAvVHlwZSAvRm9udAo+PgplbmRvYmoKMyAwIG9iago8PAovQmFzZUZvbnQg","L0hlbHZldGljYS1Cb2xkIC9FbmNvZGluZyAvV2luQW5zaUVuY29kaW5nIC9OYW1lIC9GMiAvU3VidHlw","ZSAvVHlwZTEgL1R5cGUgL0ZvbnQKPj4KZW5kb2JqCjQgMCBvYmoKPDwKL0Jhc2VGb250IC9Db3VyaWVy","IC9FbmNvZGluZyAvV2luQW5zaUVuY29kaW5nIC9OYW1lIC9GMyAvU3VidHlwZSAvVHlwZTEgL1R5cGUg","L0ZvbnQKPj4KZW5kb2JqCjUgMCBvYmoKPDwKL0NvbnRlbnRzIDE0IDAgUiAvTWVkaWFCb3ggWyAwIDAg","NTk1LjI3NTYgODQxLjg4OTggXSAvUGFyZW50IDEzIDAgUiAvUmVzb3VyY2VzIDw8Ci9Gb250IDEgMCBS","IC9Qcm9jU2V0IFsgL1BERiAvVGV4dCAvSW1hZ2VCIC9JbWFnZUMgL0ltYWdlSSBdCj4+IC9Sb3RhdGUg","MCAvVHJhbnMgPDwKCj4+IAogIC9UeXBlIC9QYWdlCj4+CmVuZG9iago2IDAgb2JqCjw8Ci9Db250ZW50","cyAxNSAwIFIgL01lZGlhQm94IFsgMCAwIDU5NS4yNzU2IDg0MS44ODk4IF0gL1BhcmVudCAxMyAwIFIg","L1Jlc291cmNlcyA8PAovRm9udCAxIDAgUiAvUHJvY1NldCBbIC9QREYgL1RleHQgL0ltYWdlQiAvSW1h","Z2VDIC9JbWFnZUkgXQo+PiAvUm90YXRlIDAgL1RyYW5zIDw8Cgo+PiAKICAvVHlwZSAvUGFnZQo+Pgpl","bmRvYmoKNyAwIG9iago8PAovQ29udGVudHMgMTYgMCBSIC9NZWRpYUJveCBbIDAgMCA1OTUuMjc1NiA4","NDEuODg5OCBdIC9QYXJlbnQgMTMgMCBSIC9SZXNvdXJjZXMgPDwKL0ZvbnQgMSAwIFIgL1Byb2NTZXQg","WyAvUERGIC9UZXh0IC9JbWFnZUIgL0ltYWdlQyAvSW1hZ2VJIF0KPj4gL1JvdGF0ZSAwIC9UcmFucyA8","PAoKPj4gCiAgL1R5cGUgL1BhZ2UKPj4KZW5kb2JqCjggMCBvYmoKPDwKL0NvbnRlbnRzIDE3IDAgUiAv","TWVkaWFCb3ggWyAwIDAgNTk1LjI3NTYgODQxLjg4OTggXSAvUGFyZW50IDEzIDAgUiAvUmVzb3VyY2Vz","IDw8Ci9Gb250IDEgMCBSIC9Qcm9jU2V0IFsgL1BERiAvVGV4dCAvSW1hZ2VCIC9JbWFnZUMgL0ltYWdl","SSBdCj4+IC9Sb3RhdGUgMCAvVHJhbnMgPDwKCj4+IAogIC9UeXBlIC9QYWdlCj4+CmVuZG9iago5IDAg","b2JqCjw8Ci9Db250ZW50cyAxOCAwIFIgL01lZGlhQm94IFsgMCAwIDU5NS4yNzU2IDg0MS44ODk4IF0g","L1BhcmVudCAxMyAwIFIgL1Jlc291cmNlcyA8PAovRm9udCAxIDAgUiAvUHJvY1NldCBbIC9QREYgL1Rl","eHQgL0ltYWdlQiAvSW1hZ2VDIC9JbWFnZUkgXQo+PiAvUm90YXRlIDAgL1RyYW5zIDw8Cgo+PiAKICAv","VHlwZSAvUGFnZQo+PgplbmRvYmoKMTAgMCBvYmoKPDwKL0NvbnRlbnRzIDE5IDAgUiAvTWVkaWFCb3gg","WyAwIDAgNTk1LjI3NTYgODQxLjg4OTggXSAvUGFyZW50IDEzIDAgUiAvUmVzb3VyY2VzIDw8Ci9Gb250","IDEgMCBSIC9Qcm9jU2V0IFsgL1BERiAvVGV4dCAvSW1hZ2VCIC9JbWFnZUMgL0ltYWdlSSBdCj4+IC9S","b3RhdGUgMCAvVHJhbnMgPDwKCj4+IAogIC9UeXBlIC9QYWdlCj4+CmVuZG9iagoxMSAwIG9iago8PAov","UGFnZU1vZGUgL1VzZU5vbmUgL1BhZ2VzIDEzIDAgUiAvVHlwZSAvQ2F0YWxvZwo+PgplbmRvYmoKMTIg","MCBvYmoKPDwKL0F1dGhvciAoXChhbm9ueW1vdXNcKSkgL0NyZWF0aW9uRGF0ZSAoRDoyMDI2MDQyMDEy","MzgzMSswMCcwMCcpIC9DcmVhdG9yIChcKHVuc3BlY2lmaWVkXCkpIC9LZXl3b3JkcyAoKSAvTW9kRGF0","ZSAoRDoyMDI2MDQyMDEyMzgzMSswMCcwMCcpIC9Qcm9kdWNlciAoUmVwb3J0TGFiIFBERiBMaWJyYXJ5","IC0gXChvcGVuc291cmNlXCkpIAogIC9TdWJqZWN0IChcKHVuc3BlY2lmaWVkXCkpIC9UaXRsZSAoXChh","bm9ueW1vdXNcKSkgL1RyYXBwZWQgL0ZhbHNlCj4+CmVuZG9iagoxMyAwIG9iago8PAovQ291bnQgNiAv","S2lkcyBbIDUgMCBSIDYgMCBSIDcgMCBSIDggMCBSIDkgMCBSIDEwIDAgUiBdIC9UeXBlIC9QYWdlcwo+","PgplbmRvYmoKMTQgMCBvYmoKPDwKL0ZpbHRlciBbIC9BU0NJSTg1RGVjb2RlIC9GbGF0ZURlY29kZSBd","IC9MZW5ndGggMTgxNwo+PgpzdHJlYW0KR2F0bTtnTiklLCY6Ti8zbHMjYTZNdV9lTDAtL19nZ25uc3U0","KiJwb2l0bi89LGM4NCZdSyM/OnBGSV5pVWEoMD9SPnNgTDVtIlpWWmZnXCxNQmtDLnJbJ1lRbCU3ZCo9","LzdaKVFEQGRFZGMtRzgoUiZiTltAUU9jNj5GUW0nXi8pNDhxZ0ErXE5WdT1ITXJNOCctWSVDZTFNJUY4","SlYlSFBqXGgpVmVTKT87cThxSWRpcTlqUl1tPlhCSClObjZfUGQiUC1mSixsMXBaK0lESEIoXWowQDpo","cENANS9gK3B0R1NbJGY0cmZxMyMvZTZIODFRPjlpSGZBZTIkcVYlQS8sIlNSLVhuP185azBGOmxFRFdJ","OjJqdFhVS1ZMKyYjOHBqLm4tKUoraGlcay5WQzVUU01KcF4nbT9kam9bSVkhXkc6NjpATFZxV2xJZ0Nf","TlJURjYnJ2JoTW5nX2lvMWBnODNoYGw4Oj1mKDcqMStGO25aIiMnLTs/MmhaUmVlNmVvP24+YEJPM15Y","VlxrS2ppYj0rXWNmJENJRTIqIjciaDg7Ii01aFFuMFJjSVxPbSNoaC08VlxDRVkmYTwnb290XycjTiE4","LF4nRjYzIllESmZzVihucnQtUWxOR3BPXkUiQzIsS2gtbmosaVIzLCNIIi9oLiksXjAmS0YiW0ZgNjVr","b2ZfRk8tRzUkPjlEbG4rYy9hVEVkLlU0L0U2PlMyc1VaIU1fPGhTWk9FSFZSW3RDI0QpOWQtLClEay46","PiEkXWIxVzJTNUFkXF9ZbzI6QmZGVF09YTU6JmZIMjVnIUxAMW9UVkQrOisyWEFnVillPUZWOSlhYyNB","YVxEV080TV1dPVg3Vi5eaWlIKUpxOXU0Xyk2VWdETmIzKXBNbDJNXHVnZVdrOWVHL2RvTyE2UXRmYylI","IUtqP107YWdRJlNTLSFWa08nN1EpckhTLFJwJW5XcVRZYT90ZnBnTyJAPyNaRWRUP1lqZSNcRUciSlw5","RSFobGNnLmxPXGVYVl1JX2ZhTy08WSg1Uk1TXEVFWixhaVY9by0uJUheWmk9XmltcU9pQywpJ3QrSi5Y","TDwoMzE6QTpiVSpOaldMVFtYdFw+dD1fKWsrTidWI2xqSW9OMF11ZzNXcSQzUmppNj42R1NhY3BPQWRE","OlpYWmFcPUpxalhOV14mIk0hcFEzUUllPExpdUglPU87LEFETyZsQENxU1o8WDZIOWJsZGNqXyJbLl9X","MzVDbCM/QkpkM003ZXMmXi00TVxlQEtHUU5SaCVMOm9XbCYqMnJfKiklPkczRk0oSVIlaUNiSSg+dV1J","UGIkck9mXmFMUXNPLFNdN00qLitLJWlZZnInbURrPnImJjM8KzVQMVZYJ289LmFBS1kmP1EnOj8wVmVe","RHQmXEgjLmZWImNwZlIqMVBFJClfOkhdPUM9SzdHVi1ZWWVDLy5bTEo8KyslXCVjNk5yRltqcW0lVnBU","UypQMkFKdChBSSdGWV4+Jl9XK0FEPiZ0LyFANCdcUl9wYzZjRGhwPElXWDtbJk00RiRrLmZDaCtmOW41","RVM6VC11c1xTOUVRLkpnZVhCKWw4WW5bKTA2Vjw9SktJKDFyQygqQl0+O0ZmdC85ZGlRaDk8cWs6VFBU","WmVtbiIwNkVUUk5vNkVFLEAnbUQ1XlUsKjk5ViwnO05YP1NJTEFxLFw3Ik9EOycqO1hpcjhJNyQ4QiZR","T2suO1FVTjYtT1w/TSZnZmtjY04tXnRMNkY6TlBhP15TMmo6NT8kIzYuSjNKYzVXIj0+IzBwXkAuTm08","XTk3TmpuaUdEPWNCRVdRQD0mLDg0ZE9rMiQ2JkBWOz5NN11jbEkuUl4tZEhiOm8+UVMoWWlJMksmdS4w","NWpcRS9ULmNAamcqbGYoSjJUNk8sS0d1QTllOTxmYC44azlRXURXM2BXUDJcQDhCPDRiViJkWyxES29a","VF4tajFlQSdKYl0/VVtYSSlTc0thb2FtOVspO0FbSC9UVz1rJ20yZnFPdHVcSC4jOWZlO1gkTEtXUEsx","PlhbLmAzXEBgZj0wb2BHL1RAWFAtSS5RRV1AQnBOdVMwKlsyQnImPCllZl88TE5gMExDPF9Jbl40cjct","dVlvOVNuX0Y2WHA9T2hhaWEhQis3U2VfTjYkbz5KV2xbJCFFOjpUJjhnWk09aGVOIk5iSUM7cDUwMVZY","P18pSHBQb2hTbjA3OFlwVVRvbGtiWzwhLzhvKjNoX1FKOER1QnRxUF4iSlNnQUdFMShSPG9UcWYhYzNI","bFBwUCFLPj1VIiVQPm9GcmI6YGFHPWokOlJaOzdNO3NOQEtEUWY7NT1ZRkoyalBMMFYrJzxmZDFNPURv","KyQ8MG1ZIUVPWVAwPi9SO2hOVyRLVz1paE46I0gyR08vUzdaPVVifj5lbmRzdHJlYW0KZW5kb2JqCjE1","IDAgb2JqCjw8Ci9GaWx0ZXIgWyAvQVNDSUk4NURlY29kZSAvRmxhdGVEZWNvZGUgXSAvTGVuZ3RoIDE4","MzYKPj4Kc3RyZWFtCkdhdG07YWA4PVwlKSlOZ0UjVS8+MUYuPDMuXj5ON1BTLSckPkdrYCkoK21xX1Jz","VC0lSW02M2U4dTFdTjNNazBQK3BpYzEmISlBRE5cQWUtN0w/a2MmRGdiIyYvKWlNJjJwajw+ZXIwWEhU","aSwhOVpMWEo+LTghKDknLUU8aiNTL2xfS0wxXiIxKkFePXE3YyUkSEVVS2ZVXF4xMHQ7M0c5W0pMWz8k","UEdnPlZdRDVtckBqZ2MvZicrXHElRF5lSWskXzZbNjtVXjBjUUYyZGJFLHBdVFBbTVdaTShObDw5Ritm","PUssZjQoPGYzIzovcFIwTG5WTjdKM1EiImpXa1F1SG8nXStmQEVsX08hJW08WnRpWG9mSiJZTCllNig2","LWJDVEIiWGgzQTBkX1llWkhfKj9ZYlNbZlQuWSU0cUgtNSRkOWxBIVZmcC1aYSwocEZRMjNfYDguWXJu","aCE9J1RoNjNsJmY5Ti1UUTk3SDhdQClyLF08S0BtLnJWQTx1LWBQPHQ6bjA2Si1JLUVnKy8qYV4paEpE","JShnWTUiQTFNLCNSV1RycSgqOG1QKytyWjl0RFIpOWtRVDYuKEBvb2pVVjleREYoOkBFSmA5a1EqJjtV","QiFYK3E3YGM8TTxgYE0nNE5HKU9YakwlLjg1I0EnPk1NJnUxN15NO1BtcipKTDNXP2FzK2A1SG1oJUs5","JmxhUEJGayxKRWBSMyJzPFQtLkZFTzY2OklKRmVIQWUkOzFzc0kqXGFSZ3M0Mk9rZFRYXHItOzxTQj1h","b0I6Yk9TdVszWzM1KS1ML1hRODVvY01jTDpMMTsqZTcjLlNHIUNoVFFqKmtmQkY5QCJIbThGOyVgPUQ9","UjNJYkdwUFpqKjB1XSdsQWliXyc3XUw9SVZYcjpgQSFNMSxIOEQmTTdqOTZtam49Wz4kJGtcZXJmbmZZ","W1JALz1KIWkmYihnWS5iX2Y1aWAzcV5OTkgyczBUaGFTWkA1LVcvQ29fNCtmMlZBQkpDaXVfPUdSUEMh","VXEsNzJnJS9MKCNAXC9WJ0wyOVUsJE8pbzIobFdlZ0FbYUtWSVw8Ui1gLyV1QTstQl1NLS40dGozM1Vq","OT1LIzQ2aCNZPlxuYC47LzYqXVJgblFiJC9CQ3JqRjomUCo0JzhUPG1NZS9GIyInODYsVEo6YCwzRkZG","TCssLDB1YCMibHBQUVY8VFBCUW0xPU5tJHE/YzJLZylGQ1htPDZlPSFTc3J0c11fTXJMUjFdLzIjZyc+","OUVIU1tmNks/QTJRTztkR1wsPl0zSW5iYk5QcDw2b10hJjAnOT8pPCRCdTZyTihgL2YyMWBnQylTTHJA","Y0hSYykva1o5XkNbXFZJXy9QYUghaksqNzAlKl9GKjQsQT1fSCRUQi8uWldUYzRkInJHaFIjVFtpKzdL","Xm1vND1bXFJBQnFORl0wLzU7SEU6J2FbREsxM0xAbThHSl9iQidYPEg9dDddM0JiPjQ+RTw8KzxkWzZn","QlUiZEdIQFE9a11BUF5Bc1U0Wy5YMEZzIWNyUF1LPDtxPygoOVZWZE8tai81VD1ZLUNvPWtLL3NUJ20o","cjJjRCtfT0MuYltyTkJyRj8pS0JENVtvdCQsXzkkMS5DMkFJOCRqS20+QkFVMFJ0aEI1UzpabW5ncTwp","TTI5R11SSF8lLHMpXlJ0TS1JS05oYFgjJU4/N1hGV0JZcCltOkwnTSMxKCVDMVA4bCVnNTtSOTtIV1Zj","K0g+MmdaYFFLN0xAYj10QFdYLFBdPDRWUm5ZNykiLV04VkU1cVltKVczXDB1VEk2YjpDLjRpLHRsbC5L","dEpESk1CNk5TQ3FxImZnZHViXWRlM21GbUFPVFhAPzEoJDtXV0IhcUdeZzhkUygvJEBDOUk4aldAa0pr","bipYXTo4WWtHMltAZTVGak9kR0dSZyYrYlkpP0I3Vlhma0pIJlExWmxMSVRmR1pgTV9tVDpFOE0pb2ts","PHNDUm5rQStWT1Q+LmMsRmMxKyw7ImczNWlpXEMpZVFmb1tqXU0jRS9NOlxPMTAyNVMxO0pVXjZrVEB0","PCI6ZzVPREpuQmQ1RzRrNkBdX0UyR1ooaCUzLF5hLmU3KkonR2w0Lk5IWm5RX1ttNTYqJnI7TCZjJzR1","UkpQSFU2OG5GRUEhMjEzMk4kRklgJVw2TzlGVCc2LGdvYSRpQGtqYSRyQ0w5LF0nS20qb0A0aEZxb1JZ","aGlfOmRxXExgdXVmOHAnOGgvciVZLDhhJ0FOVmZMcFAyKUE1LG5iWEVqISJScCwvKXEsXThcZikmYG1l","Szc8X0ovNW9wXXVgPDE+YkNsO2IyQHNPOTBKN0IsZjdbKG9idVE1Q25yWWJdQjw0IkBpP2QoT3FJcyZV","XXQ7MSYvOG9YMkRtXUZsTWlXRSRVcydraWwsVjV0Y0c1bVFuR3FCRSYjMWxvbFp+PmVuZHN0cmVhbQpl","bmRvYmoKMTYgMCBvYmoKPDwKL0ZpbHRlciBbIC9BU0NJSTg1RGVjb2RlIC9GbGF0ZURlY29kZSBdIC9M","ZW5ndGggMjEyNAo+PgpzdHJlYW0KR2F1STc+PnNRPydaXSwsJ1cySF5mRikkL2Y9NWJQQCtdUTZmUmRO","bSJXaT5sIkRyUy8+J0EmO3F1LmxoK15uZyJnQmVtNDY9Uy1kXGJzY0w3cVE7bE8uIjxOLWkwNFdMTFdm","dFRrJGQ+WlRMaUwnSVM2N3BYak1eKydRLDUicUg/SUEsMilWbi9RPU1iayg1IzghX29xM05jLllqPWlm","U1cxKipeOjo9S0tWXjA6cWM+JjI0MDYjaVExbDxzLVYnSSszKnFeMW81RG5eYkVcTjsmaEdFY3NQLjAv","JjVPZUUrLHNmSlgvN0R1RktrLkkoJVhUNyJObSQ1KXJRWiVoRkRlYU5OJFlYOCI+Ml1wSyslXytfKkJE","TjwvWi1xbkpeOmI9ayM5alB0NW1oaTRDUGkqJ1kwNCJSLHJ0T0JFbktJOlklMkJqJ1ExODs0P19PTkZc","YytPc0hAJ15IV05fQCZmY0lUYWxNOzZTY15jLlhQPiYvREJbPWpYaCJBK047NDxyK2daJlQ/cWlhJCEr","MWJmSSJwYXFbKldwNz8pVTZxdCsqRmJqOGowbEc7Sm4+IjdEZy0wUDhKRC0uMVUtSnQ5JGdsbGFeaj47","XGdUPz8sTU5hPVdOIjBQSWtbVUF1K2RBXjBaJmhUN0FWK2UwUTRZdFRMJEsiZT1cVVRyUiNWRWxJSlEy","TVpZYGwmNkpdPD1pMUNcTThmKmQ0M2U/LFBAUTRyXkNYXEc2JnNdRFNaMEloLFxxIStaWkdsbVkmPzNy","WlpPaUFYYk5aQUghYEJTP0tNYlsqaGlJcVgyTyxoWTZ0Zyo3bTc6NkhCWnRhZSRNcktDYkRhayleSSxC","OjI6Q1tnV0AiXD1BN14+Zmw/NiNmQmVKXUombitJbktubHQ0KWQxQDxrVFVEc3JjRFFSWC9ycV8xSnIz","ZWRaPEAlIigtTVBodE9bV1I5JF9nbGJUTFhuYVVtUDk7OChwPzFKZkBGTzw9ZFReMlMiKTRtRElCbWU/","KUwwIzQzRiJnKCJZSyg5R25MMi09UCcmdHIycEMwYCZOMUxPZ1BpOUtyM0BzPWkuY3FeSzEjaTY0RDRh","W0ZUbyNuKWozJktLSyQmLj9RXWQtXGhpTyxLSU0wbVJaLENkN09qMmwlUElEK0RJIismNkxsJSpLKSZK","R25YNVxSUjFjRDhEcGl1PEhDayk5IzFTbThpb1VdYFVFY3IwbW4vVzJScUFsRWw4NzN1LlR1WVsmNjRe","WjlvM1IyPD0mXE1uMT0nUVMvaCYhZSsqdEpgYzpQVUM4IXFDbjBzQ1ZSPldpJmVVK21OSjdBXT9CaiIs","W29ER2EoU0o6L2o1TlxkMUhGckA5VUgsayw1S244OzU2LW4vUy5xNjlfVD9XLz9lIlo5VTk8Uzchb29m","QytmJyUnXS04Tiw+ZlpDJGhHWmk1Sm5OdD8+Nl5yK2hBXFdyKyNPPy5ZJjRpcGFEQFVGWnJVcDY2U3Qn","Q1BGWF9kR2Vcc1JEKUJOcTpVLDFTPipMU1pMckVhMDBVaDxgTSlNOz4pW1liKFxeWXNTZUoyRzEnSV1s","PENcJzdPVWBoVjlHJk51PzVZYHNAclc+L2BjaUtdXDBbZlhJQU1QN11VOzg4KTUxRkBxKm4kZElXPEIq","blddYClubE1sNUhZRkMvJUg8OEIzWEw9M2NITFYoNklwYWRRLkdaQDJYXjk/dENubC43Lk5VOUtlUy85","XS41SC9eZkkkOlRyajopXzs/ck9ObitCZTByIThgbGYqWjY1XFglV2ZaLHVTQVVnOj5tPGs+YC8jQXNB","Wj0iZztZSzFBXSpbMkQmYGwwPm9HNyhbbzFDXzY6SmY3ZSVMS2A/UipPJHU6UVhMa21IbWctOCZfPGI7","XkpSZGtqLCNhIy0nPG1AczkpMV9iZGphMm5YbCwobCpaTlRdY0ZINk5aWC9sTVNlRi1oRjohbi4xL1lO","Pj1UX2hjO0NSVFtIWllFXls1b1g6MXNDJjJkTm9cZ2dJbFhEVTcpSDA/RkotPF0ibG5sPkZvLihoPUVe","MjJqNVc2QlNvdC4lMDIpLzFkYVFwVkcjOnJIJXNFS1krJjRNK09VQkJsSShFdTUyMUspZy03Zl9QUD9m","RUVOWFc0XzphJ1xIJj5Zb1FjSmdrbS4pVklOT0JlVSU9JGxRYXE8YFFTI2tyRF0nIj4/Ym1nVClOY1Mm","SWMsXi1cIlhuTDlGU2M5IkBeT2hVbmVPJj5jI0NcQFxZKVsrQXVyMCslTl9uPWViYDl0OTVOLDFUOU1N","RDZbblchNj1COGhlSCFkYjwwYl8wNF1RLmxCXk1URDJWTnQyaS9sPWA3JTo0S2VraFNqTSpeLEFncD5o","ZyMzYTBTNUloYVwyIXRsTVBQRE03UlFUPycpQHNHbmJfX2lBRy00UFtTQyRrcTNQWUVeLkAxKjNMLWEt","cF1hLzZzaGY7JUpUWzopNWdDPnE8JnBfKiU/MzwyXGtoJnBTcSVlZU4oZCc2LTw5YHQlOl9bPVFTKjlu","bmApaEF1WjlbM2c7MChOSyMzNE0ub0xfa0g4XVUkbGIzSWA5PktjYjlWSiUyKT1LWjw0NGtrcjlaMyNF","SjlzVlkhTVZhIVM1bz1EV0U3Ljl1cVVIbGlEXyxFZjk5KUVgPlheXEtDX1tmYTBkTFhFb21BPSopM1hH","P2U7IWRUWlxSYnVZZ2RUaElqJTsqWXNSPy8/QVIiJWpRWEBcZG1IMFpIcmNLM1E3NzpAIj4iOmVLbT1c","XDg+YjtFYUddSFRYazBqRy8qcSxWb047dXBNdT4wWTtBL0JxJFZlJm0rVH4+ZW5kc3RyZWFtCmVuZG9i","agoxNyAwIG9iago8PAovRmlsdGVyIFsgL0FTQ0lJODVEZWNvZGUgL0ZsYXRlRGVjb2RlIF0gL0xlbmd0","aCAyMjY1Cj4+CnN0cmVhbQpHYXRtPD5CQVEtJnE5U1lmWEVuYU0jYjFFMVpzPU9rc1ZXdDM+MV4+azs3","VTsuOUsmbyhQTls3cT1lMFYmMitcQ2xJNl51KDg1ImIoXS5ZOD5DWmFuJXI7MWwpOE91RD9KZEdFLUgo","dFxDZ29jRUoxLy8sRWwjLFtpdDYkMFhwTFw2JnIvMWBrRm43c2dTJzAvYDpBPypFZSI5PkY1LWM8aCQp","TUNyRypDLzFPT24lR19OJiVFK29za2Y8YjVDMzFAZzFsVVY/Pi9sbzpmKGlWXlNOYE5BZC9gNUFRMyo6","cm9rUzslLitvWVg/b2FzRFlIdWZCSm5WcWdzbS9eV0pvbUBeN0JlZGY7XkA9b1hQSTldZT4yTG1tUm1A","QVIuRG5GSyQoJyVmI15qQl9qZC9HJSwzaT4zMDlbYmRNa2s1XyFFRSZibyMtZ2M9YC1ZL0JwJWomNiIm","OkJwbEg2dEUrajg/TWNATCsnVCZvIWJPWic9JV0tKm0/SFhOP1lSbSdULF1pbl9kYEI9YEMkVUtKQ1Mp","QFdXV0lZYyQhPVFdPVRxTU87cVZMPWhsPTgoWnQhSUQ+JUc5SE5iPjpVcl1wdGsrYmpKMWYtNmUmMyM6","MDcsZm5KJGo+Ii8kVEliJV5ZXGZINC5gYVdxMUpOYD80UTgqSSFRLWE2WjEuTkUpSEBsXV9mNVZxZDM0","J1IzZC0kWGIsODlKV3BiK2gqRzBUYkMhMlA4RF8sLFRDITVsLFxrWkIkTyJQTmBmS0hnRyc2YGM8YkZJ","M0JKJVZZZSExO11SJCIzJmIrKF45Mi0+aDVtbmgnOmtkNFFAJ1w5XE4nPCtEPzxJIThoYDBzYnJgVFkp","aF1qLWg9JkxpIzIqZmtYRzJWOy8sMSk5cXFoUSxqIWc0NURzJWNpPiIoWWdhKDQoSCthT0BaNmwnaSN0","LzQmIyssSXE4IyU9NmBFQi9RdWxsMltgU2hqbS8sQjFjbEIuIz9gZWQwLyVBa1RHUEJMQSs8QlZCP14o","XlYnYCRwZC4xK2RxVTNUZVlXS0ljb0ozSTdKIkdPcHRWa1NYIkZtU1knJ1ZBXnJKcVR1QD0hXT5bVTta","NGUsWG9HZExbW0s0YF9bSFw8WiJob0FBWXNRRmZUWG5zJkFQXV5qaSNDRmZDVU0xOSE1dEw/UVNUQSQu","XUlBdEJyI0QtVEFdXENvME5FNzxDVF02TF9RRV1YR208aEZNIis5Tjw8X0dhclFjaGtRZ289UGkjTiUx","IjM8bihCT09AbD1CIzU0ZG1NT2BfZTxmMCIqZiInbTUvY3AyPyhGO2s+VjVqLVxAJ11rO2xlRW4laXNH","ZD1daldTPCpjMj8qTS5KZmFSRXJgcF4wNyxGNjtMYy1HT0NVTEdxRy00W3RVbjxjP1VedGtDNCtFaDxq","U0YpOTwuVmk0X2JXNl4pUDlmXztUak9TTyIvN2s8K0M9RUwvPUliaTRjX0kpNGduSzlQJjU4OlsncVda","USsmN1dKK09GOyMiWnVINlosJVNAdStgMiczTFQ3bC88alMhaFUxXS45LlFxTzE1UCVodFVmMGEkSVpC","KzgoSWtOZ3E6SGZyOHN0PWEsOTxWOlR1XzQ/VlUwKVpDRDAsQk9HUSg9JSJVQDFpMShZZ0QtT3QkNiNe","LTdKaTRBc1FgSzQhSmtgbmxDUmFpLThFYWNmQEpxa0ckXm9UXStVITYvM2pLKD8hQT9gXV00b2BbMW8o","NlZlSl9UNjgqbDE3Xm1lUmRfYVBuJVVeXjIxai0lVGNLLC4qZy9ddENDaVhOUTghUzxdPFFaSmdvbTQx","RjFBbXRsMywkOzRbZyYoOF4qajs/YCNybzs8Z18wJ2M7Ol9hUy1qcTx0OV0wRDtuRmAoQTk0W3AhPlU5","V2RcVW5lWE1mSkFULT1wVTIuPmphQl47Rz5EYF42UHFYO15vWW9DSHQ1VUZDVjYyZDh0QUdSY2pDblE3","WSI/IUB1aGw6JShSTXNEY2xOLGsoU1svMDZHQDZoOmlrYmVMXXBdaGw3ZUZtZWtIc0k1NTNcPk5eSlo0","MiJaTDI3WjpUcl9cWzpfK29pM05GTV82UHRxbkFxTSZNSEpcdCgrZFA6M3JeQEFtQSldXDp0Q0hxZnQh","U2FEN24rMkszOWtQKixUVGJeTGQ9LGc3NTBRPjInKmhtbzhzYikjXjgwXFowOXJfYkRCKFFLQl1PYFpx","Y18jNyFUJ2tHZ1BeLDFqNCdMQCxJLCpHI2E6bWphX2w3czNROUpNPm9LJ1V0IU9kRURsX0YjVigsbEUo","Zztxa15NKjwuP10yTDVUIiYxOE40OV00ZlpqOVFXQCdeO0Q0MjtzLWM6SGxNcjVCSm5EaG9jMl9CNS8z","Mj5fQFBVUUszOy8jJyIxJHBrPGJJP19OJ3U7OFRMYkZOYU0+Vms2cDtIWTNAQUwwTzMsSURkLUtsXz47","c2tFVCMxQjtCbS1AZHFZOGVWQTJmLmUiPmtxRU1XLkc2Z0BRWyxaO05kS15PZGYzOicobzRWP1lXKEtv","bGdLWXEtNy0+b2RANjAoaFNuLTo+ck0lQiU0SmomWT4qWlFsWWt1dEwxQD0jTzcrOFdlYiQ6W09abDNB","UFppLS9EJlBvZzI4cThfcjBGNGxSMlxgVzAxJFZmKlYqSlc4Img3Mlw3J0A2PVhvKWlxNUxaJWxGXzZc","cWZXPkZjVidWMjVaIlg1OCw6NSYwOTkoMFcqTkYhMVM+QS4pZ2UucSIsXzh0TGNpY1UoLSxnLGhcMm5h","LnUnNiFBLjszWUZjOF5sai41Wz03T2lvcDdfPTY3MSlgJmksS0BMIjYiRVMhbChHaDpsQzw4a15OVEg3","MHQ1YVNCNmhrQzwpOkFxaj0qQz01R2AtOl9EaixlWlNpPT89RjJfZTRcX2Y6OnNgK1czQGo5YXU2blFQ","S2g/PTlcJ2knPGo0QzA+WmdOPCgyQ1c6PzI6YShwXjFwNjdkaWRrKyc6Wz81T2RhYjswS3IhYlIkTms1","fj5lbmRzdHJlYW0KZW5kb2JqCjE4IDAgb2JqCjw8Ci9GaWx0ZXIgWyAvQVNDSUk4NURlY29kZSAvRmxh","dGVEZWNvZGUgXSAvTGVuZ3RoIDIzODIKPj4Kc3RyZWFtCkdiISNdZ04pJS4mcTBMVW9OTylXJlBcPmkw","PCpZMT1qXExkPEBqMiFcU0EmKSJlbS0tI3RdKVxFUTNMQyUyLT09LS49WnVfajJnPStUTWMyS0MyMk5L","UmYoSVYidStNISZtKUhzJEQ1UWk5dTUhUktgWmxrNU5vJz0lJiVETmkhYm1EMUgrNSlDPD5ASC5dNTJN","cz9sQVJkJUQ8OE87cVY2Pls3PV9cSFhERnI6WDlOKFkjNCZycDVUNGszck9SWE1hPms7LlVvUlkpJi5N","cmVhYSczS2BlWSdiSyg+dGwuKWEqWzgiWjJhVWAtaCttJXMwTE00RHRuQmlEbz9KZGVmUzpoUmNBWUIi","QTZCLGsmb1w6M2M6T2hjISxpXDJPMGItaj8uMS5BTlE+Sm5AT05jNWZSNzQxUDNjQUFyTEZEKWwlWm4n","W2UwI0U6QihGWSYxVlJMZCReX10pTWNfW1JZPj5VSUw3JClGcG9HRUBeYzxeb2BYSjpxa0M/SXU2RVlV","XitRSU0rI11QYThRb1sqRl5oUyYqIz8oKiQ3azE7L2A8TEhtZHE2LDdXSlkvOyYsTVQ2TURmQDlTPS5s","LTRJbCdvJGxDWUk0UTMnTSc9XTw1X3Fobm9PdGJsRy4pYzBqZUBlWzlTOksrKkUhYF5XW2I1PzRDZiFh","RCYjQSlNUmxyXGJsdC1kWCFdVk4pP0JfWDooLWxaNlovOEtBVXIkP243Q1lVPEdIXTc6P05YcVs1KGFq","O1AqZ1I4OF5FNV51PEwqW1xbVE4kWV5nM0NGO0wpMmdLZG1FSWJTMzBFQkdnYCUnbD89P0xYLTIkXC9l","MTdkI1dVSi83R0FxbmErMDNaIjVKazEoMkE5WkUrbTZaZHJyQlQjKz46JlgkWmcuU3JMT2hwMz06XSYm","VGw6OSxGR191azdEWFNTcjYrNzQybDlYcGwmO2ZuLWwlOFg9Lzw7XiY7RVxpNl5tL2JSNU1GX05sUiJh","J2UrRCpKNEYqP1MtMTNvPDdgdHA9OEJdU1lVJEMjIygwYTQ7UktEaT1TdTMnLzFTWGJaS2w4Tl90Pm5e","WjBTP3IlQWciNE48M2hNc3QxRGorWiJyRC1gTkJLZTU7U1UrUENWVSh1PXVGPjtbUzdWR2g0OWRtazhM","U1RrYF5EJzYlRWVBJ04oQFclI1YnSzh0WTlMZyRuYzlANV0uZiMpVHNyb3U8Xj9ZUyI7YDw5LFRZIyFf","Ql5YSmFZL2ZOa3VmOF5Za3VzdW8uXT1NQ0AoOkFoIVpzViM5akkwOUg3TFxLYTFZNzBMTDA8cF8/VHE3","bz1ZYS9gMkpGOlk8RD5mYHInNy00b2ZfbDJSaDkqYkBWNz1uOWJ0blclVmRkVjJxdTo/ZEdpL1VDXz1Z","O3U2UW4xUmxwUWhQIkNdLEpEb1JxKF85MGozIS9DQEknbThdWUpePCpiOlpMLEBxMXBPcmcwRzpZY1w0","SlhxZ24+ciNUJE88IV1wQkRyWkdUJ0k1Yk0kPW5obVksXEZgIyRZNzVyWWo+TDQoKFgzWGljS2NiLkQp","Z0I4akNkdFkzXShDSCw1NTg9TSVJPU5hIUAzVF1JTVhvcy9pJnFjXG9rNm1tSWFrZmwrZUxPZjdDJyRf","XSJuT0ZXMyI9bFBuKz5QVU5fc0hZPUFTY0FDRGFYRFJWKzRoIVcvV2tXNylyUCtuJCttP1UwPENmJ2Fj","bj9gPkNzN2FaYyJxQV0/YnVCW15SYS5SbidFRWtIWCYuIklBbDVSRlkmSjhAZEImNGM9RTxcRk5iUVVZ","ai0nOmwwbCtpWmVFQ3JAMSJQWyxGS2xoYXEtOy47RllkVEBQJDtqMTVPPD9APl8kcEVsNG9HInEiNC5d","cFBDcTdPZDwzJy51KWlLKlspQDQpdT1LYyo9bzRBTC1AS2FLSWRmKWVPQkhsUz9oK1hGVWVFOElSMyU0","ZGpoRyIuI186U2I8cDtDWmxiWTxMJSdlMnJLaDAzW1FmXT1XTUs8YjhIWF4tVWQvOG5vN2VuNnA8NGk4","ISZlVGRLL2lXJk5ZTWo+YT5rPWNQRTQvPzVNNlhjUzJJVmkoa05RRzorKiVYXmJQMmg1IzI+J291LUYv","WlJlLmVQNWpGLGVTV0E4Xzl0aVhvM1ZqMEFYMkZBX0JAPWM2NltkKSZFODkoMk5YJDVnJkM9V1dSOXNA","WSRhUGAvV0VzOV9HNnRdM1xSRXEoOzwhXWBtJjIkIT9YPkxCQm9nPUc2S3FBaCkvLDwtIWFhWz9YPiJb","TldkPjUlXmdgSVZEYTJVSTM3YDgkVCpfKlMrWnM0QS1FJD9EKU4zNlxyI25ic19CRzdyPCZhPFxBMF9I","OFg/XTpobGYrUU1JXjRyR203XlNJL0dvNzJVZiovXVZLJiQlOjMoZmZXX0tiISlaRTFVLlpwa1RLOSlp","UFgxJltuVTtuY2FmOiJtPltOcCpNSnBHMSMlclQ0ZzUlRl1NZFZTNmwnOGRTbjREbnI/OEs4cWFnWDBd","Ni5sSmBOMyE5MVdXXGZyVkFVKmBnaEBnSTc+NiY/RS1sLDpIWmdzOUNDWyw0RCxnQksxTS1APmEvQUZB","dVVCbFImKkZEWi8/NSM5KlQyXz9TJ0wvO0YwYGcqS1FaUUEqIz8oOFxkVyYjRjxGNERvPkJTRWssO1Jf","XjhzYjIrSFZPK28haCdscEFwcWlWImopci51RWJwVSQ/aS8taWFUSiImQF4iczJCLkkzO1tccCckaThr","cSdCOUlbQU00WF1KS15zL1hjc1BoJChETTcnNS47LjNYU0k8O2QwRClEMj1gTExBayIiaHBDLFFnSTwt","KWZQX1o8I01TTnBVVCJvbWg/Zl9ySjVCNi1aK2hOaS9tV2psM1trZFBZKWRCWVRAP1wnUENdYTdGNmJd","YWM/ZlpsVW81QCdmPyg7amI/XzouKXNLXmMzKHUkT1s8KDRWKyptTjxeITNZJE9vIVdYLSlxUmdURnFG","JWdYWVN0WGokJ25ac0Mvb2AyOVgzIVh1SFYyOyg4akBXYlZtXmolNCVgMU5GIiZhIVZyWnFMP1tXPy9f","MycsT1UhdTA/ZDdkcVtLTm45OFZcJjtYSlgoVjVOTlpIVyhKWE50PiZlbEo1SCpXRkpOSS0kU2ZLZWZW","LyRwakQ3S0VhOFdDbS1+PmVuZHN0cmVhbQplbmRvYmoKMTkgMCBvYmoKPDwKL0ZpbHRlciBbIC9BU0NJ","STg1RGVjb2RlIC9GbGF0ZURlY29kZSBdIC9MZW5ndGggMjU2MAo+PgpzdHJlYW0KR2IhI1xnTVljYyg0","R3BZbSRAXUlDWF4wX0JjbVlCKlAsNzJBXDBfYnAmS09aOydWSjAwKydALSFZamhQXUNxJlRVdEFHbDY0","XGQ0ZkZoaWptKiIqdVlHIk1oNUduRUVhYmU7UDNrNnJkWm1fTi5rbmpvTFFQQENEVCs5KF9WPF0pO1o5","PStuYjsqPk8lJ1U4JyVGXTtjKG0mLzJKUnVIKEtVMWtLK11cKzlmSk5KOD5gKlNCQEJHUlpxMShpaVRY","NC9CXHRJST9DLGglPGBYdUpjWS0uIypKNnJEaSkuMS5UcGBtYUJZcU5sTms2NkBKZCtuMzRvS0M1Ql90","OFUoMytRLiJDJkBUW0ooVDxXYHVKaUREImJvUktjPm8iaW0yXWBoJSsyJSQ8OE5pJF50JW9SU2ZYbFdH","R2FjW0FbJmZmIUhqW01OVUwqV0R0NCVIKTshMj01QD1jMm5YMy9RMi4vSkA6cjptbCY7SmdbUG9bOyJk","VXVaUUleKT4uQFNEUj9IIkclJzNESWZrdERsZlRwcidYWkRGRjcpdVJdLldtYSlULF0iPltBMT1iWy84","WyQvQ3I/ITdmPl5GJDFRQSpxPjp1NlVhVjVkMywoVHBkJjNgK0dEdHAzbWRQNjU8MkosL28jXTRMSkFX","N3QvZHFWJWAmS1olLEN0MGM3XC9yZ0swTUhSZz84IVdHP0JlR0Ipays0XUMzLURdZD9nMGpFZDY+ZDc9","c10qM0tZMk1QMD47US8vISgubWdHTS05J11NaGgvZzg4biUncCouOTdnLVMjTmlCMzM0NFkqYDoxWk5f","IWBtSVBqaDcoKTJjKWRcdWlhSF4mVV49K0hBbkQ6NV5MVSxRJlxlUCU8SWFzOls7TUIzOGQxSEZHKD4/","LCMxV09nKUFUS1lDWWhGPTpaSGpfSGlnK1hOPDNAJCUqUCxiVyc8VC9uTEtIJjtcS0NlbChOUU5wOFpI","OkRaVVlaNTxJJEFKaDE2TTdPPmRoYkwzZ2ojW2c4S2U5bE48a20+VnJZRmlcQiEhU2tldFAhWj87RFM3","TiRITyhdYDhGOFNXT2UoTGg+KyI8QVdBYSFINGt1P3FobzVeIitTLi1UKEFZX3Q2QT1ESGYxXzo6P0k1","ZHNva3AsMVpCNSsrN11SXTJWcSJPO1lfQVdCKmEuSV47ayVnNFBhLEZwLyxJLiYwQ2pkbG4oMmJbS185","ZCwoMjQ8Y2coUm82U15eMm9nOVhvbFpZU05vZDZdWVpZUyphRl9FZEkuWTJPLFdQX20nOiNCX1hIYmQo","akFEVkdcZGksUSpvQz5eTVlxMnBPaEszaC0oXXJqWCRsOV0pYUBHKHAlL21gKTtgYG1JS3A4K140RClA","VU5qPFMqOFowbkk0VFRHb19lI1k7IVI9Tl4+LzxBNi0yWV5sXEhmZC4zWWgvPUVLZjJtSzxYU29kNGFh","XCdLJ1ZYJmJNUSYoQFJcQWJdXl8+R15CLF5IWmBuMiZkYTNpXzFjM05PSTdNMz4vLFlPPUM4KVQnWklO","b1s9bWQ8KmtydV9ZN3BOUSEiNjgkci5bZkE7amJbKEAsXkIpYjM2TWIxT1xmM3EuMF1PbWtfKScmKDxT","KFdPPl81NlNFKmRzZykmWmYhXm9YVysqUD1uJ24oJTthISxxcGBSa3JCMzEsSEhaIidfOzEsJ29oSzk4","Nzk5Ri5SPkRNSGonQyVZOy5IcEY0MWdyNFU0XV5uQDE/XyVqWUVCUVNZO2BQXkZyNEBCUHNlK01DTGtX","Qm5tVF9BXFgoaFBpaDAjRSlcai4kb2JnZ1N0Tk9EQSkjLHJzcWg8Rl1qMVBFMWYxY3NFUlxKbjM/L1p0","TE47KURvWm9AM3VAJ0ZmS1tZLyFScWxLbTtbIUk/bVV1ZlZDTTc8dTFEMSxXaighOCFyMiM+PzlzKEtQ","TWUlSlJhPmMyW10mWFAkQCopNllnW0tKWyhbXDI6aDVFWHBVRW9mO3FabiEwNXVCMkohIVBvZDwyOT82","UE1lImtQNCVocGVZKVA9QWRYI3NRNE0zck5oP0VMWCpmW2NUL0kkQEo1Ok1BbyYzRDFmam1bKD46PGEp","Li88WWxhYSRKOnQ+VEFfQ15YNltkQCEpcCU2MSZYNkJCZlIvZjFrIkUoX2swOEw1O2pSKGJdIWNmYVhM","c2JYMTtwTydxNG5YTmU9RFotQEAyJkBeS1tsOSFiXjM8R0BeUydFV0ElZjdvX24jRFEjOyg1WDVtI24+","QmU9NCJDUCNbNCpcLGBJTUwsVks7OWZIQmJVY24iQEJRM0ZKSlxjSF0iYEVnW1xLMUAoZlAnLjJKIWxb","MCIiPyFIQ3UkSkM2XjZVSzh1RmNAL1shOmg3SkUxXG49X2FzVypCSl80Rl4vJ2lWa051IT1gSSV0M1M9","RUhNbXNZM2RnVU5nQF51Ry0tRGcsQWxcPU8hIUZuMzRMWygqTUlfSyhaO2M3ayxyRj5PUT9CST9yPylo","a3M+QkpuWzRtLkNMYXE4MWZzTkBhXTJfPDxKRDFYSmRhZjNtRGdENSJDVlpPOW5uV1I/WT0+cC5sTjBT","ZSZRJW80czttYz9PIVMvNGokUCVRJDhlZyZdUCVGOipcaiJcLDlBTlRDYkFhV1xyaDw8VypcLE5HbWRJ","IjIyYiYpZSs4aWxxXk5DbGBFYzdBbkZKQT1ARygnSW4wJjtmJkdZJCpoRiJXcGApcFxuZFVnU1cyXUkl","dHNVRVdwcFlVYCZOJTUoVzlFNiNETWk6J0o4QUAkc08xKWlYc2UocT05NFg2RVhmUS0tVmdwaCNEc0ko","LzxsYWUlPGBHKTRCQkpZIldGRikta2VlZ3RKO0pTNGVbVmtDMHFPKi00RkFkN1ROL2hkYVgkTEVmND85","QCVrPVwsVjEzKld1OUIpUjd1M2onLCdNW1hnL24lUFYqSF5jSWtEU1NGXFlXXFZqRmgyciRHJk1vVm1P","bVBpITFHT18oSGcrNm9wISkoIj4/Z1pXcnNKXkR1TktxRC5jWjRMLFFQRVFuKkMsOTo3cDVDVVJgIVQp","b0JIS0xVUChVVSFdKmA0MkRPYSMoUjs1IUcvNlBHIV1XQkRVYDtgZD4tWFUyQmRVNnA1V0RiQkkxczJo","Ildkb1JiP14hbEdGNUVeU0ZZISdLaEdwazguUzo6UCNPZicrYmIoZFRQJTleXDBhX0tPMlMpY3RmKEQt","clsjS1lMUyg9Ukg8JF5eI1VLZjo/UWFKTyZXWFR0KDRBQ102dTxoWyhtUCIpPjpicG5eXlgua2UjYTJA","XWYsUVdLJG9uLi5OVHJKTyVKOidsWVppOFhPVlBXXFxaLVlXLTQxK2dDZmg9LVtMckNxNklWbHI8WDVb","c3JPLWYrODxjX0QwRVtdImloclc7LUMhZj9+PmVuZHN0cmVhbQplbmRvYmoKeHJlZgowIDIwCjAwMDAw","MDAwMDAgNjU1MzUgZiAKMDAwMDAwMDA2MSAwMDAwMCBuIAowMDAwMDAwMTEyIDAwMDAwIG4gCjAwMDAw","MDAyMTkgMDAwMDAgbiAKMDAwMDAwMDMzMSAwMDAwMCBuIAowMDAwMDAwNDM2IDAwMDAwIG4gCjAwMDAw","MDA2NDEgMDAwMDAgbiAKMDAwMDAwMDg0NiAwMDAwMCBuIAowMDAwMDAxMDUxIDAwMDAwIG4gCjAwMDAw","MDEyNTYgMDAwMDAgbiAKMDAwMDAwMTQ2MSAwMDAwMCBuIAowMDAwMDAxNjY3IDAwMDAwIG4gCjAwMDAw","MDE3MzcgMDAwMDAgbiAKMDAwMDAwMjAxOCAwMDAwMCBuIAowMDAwMDAyMTA5IDAwMDAwIG4gCjAwMDAw","MDQwMTggMDAwMDAgbiAKMDAwMDAwNTk0NiAwMDAwMCBuIAowMDAwMDA4MTYyIDAwMDAwIG4gCjAwMDAw","MTA1MTkgMDAwMDAgbiAKMDAwMDAxMjk5MyAwMDAwMCBuIAp0cmFpbGVyCjw8Ci9JRCAKWzwyOGI0MmY4","ZjQ1N2I0YWI5MTVlNjdkNTkzODA3MjJhYz48MjhiNDJmOGY0NTdiNGFiOTE1ZTY3ZDU5MzgwNzIyYWM+","XQolIFJlcG9ydExhYiBnZW5lcmF0ZWQgUERGIGRvY3VtZW50IC0tIGRpZ2VzdCAob3BlbnNvdXJjZSkK","Ci9JbmZvIDEyIDAgUgovUm9vdCAxMSAwIFIKL1NpemUgMjAKPj4Kc3RhcnR4cmVmCjE1NjQ1CiUlRU9G","Cg=="].join("");
+var SKEY = "eva_v10_key";
+var PKEY = "eva_v10_profiles";
+var selectedLang = "Francais";
+var selectedFmt = "9:16";
+var footOn = false;
+var narrOn = false;
+var activeProfile = null;
+var coachCache = null;
+var monoType = "shorts";
+
+var MODELS = {
+  claude: [
+    {v:"claude-sonnet-4-5", l:"Sonnet 4.5 - Recommande"},
+    {v:"claude-opus-4-5", l:"Opus 4.5 - Meilleure qualite"},
+    {v:"claude-haiku-4-5-20251001", l:"Haiku 4.5 - Rapide"}
+  ],
+  gemini: [
+    {v:"gemini-2.0-flash", l:"Flash 2.0 - Recommande"},
+    {v:"gemini-2.5-pro-preview-03-25", l:"Pro 2.5 - Meilleure qualite"},
+    {v:"gemini-2.0-flash-lite", l:"Flash Lite - Rapide"}
+  ]
+};
+
+var TEMPLATES = [
+  {f1:"J ai obtenu [RESULTAT CHIFFRE] en [DUREE] grace a [METHODE] - voici exactement comment",
+   f2:"methode ia gratuite 2026, gagner argent youtube, automation youtube, resultats prouves en ligne",
+   f3:"1. Montrer la preuve du resultat (screenshot, dashboard ou chiffres concrets)\n2. Expliquer la methode etape par etape\n3. Montrer comment reproduire le resultat\n4. Donner les ressources gratuites pour le faire"},
+  {f1:"J ai teste [OUTIL/SUJET] pendant [DUREE] - voici ce que personne ne te dit ([CHIFFRE] de difference)",
+   f2:"comparatif outils ia 2026, meilleur outil gratuit youtube, analyse methode youtube, test ia gratuit",
+   f3:"1. Presenter l outil ou sujet et pourquoi il m a interesse\n2. Protocole de test avec criteres clairs\n3. Resultats surprenants (les 3 decouvertes)\n4. Recommandation finale et methode optimale"},
+  {f1:"ARRETEZ de [MAUVAISE PRATIQUE] - Faites plutot [SOLUTION GRATUITE] en [DUREE] (resultats prouves)",
+   f2:"arretez de payer outil ia, alternative gratuite 2026, solution youtube sans budget, methode simple",
+   f3:"1. Le vrai cout de la mauvaise pratique (temps et argent gaspilles)\n2. Presenter la solution alternative gratuite\n3. Demo complete en temps reel a l ecran\n4. Comparaison des resultats avant apres"}
+];
+
+function init() {
+  if (typeof marked !== "undefined") marked.setOptions({gfm:true, breaks:false});
+  var k = localStorage.getItem(SKEY);
+  if (k && k.length > 8) { document.getElementById("apiKey").value = k; showKeyOk(true); }
+  document.getElementById("apiKey").addEventListener("input", function() {
+    localStorage.setItem(SKEY, this.value); showKeyOk(this.value.length > 8);
+  });
+  updateModels();
+  document.getElementById("provSel").addEventListener("change", updateModels);
+  setupTabs(); setupLangBtns(); setupFmtBtns(); setupToggles();
+  setupTemplates(); setupGenBtn(); setupCoachPanel();
+  setupDiagPanel(); setupMonoPanel(); setupGuide();
+  renderProfiles();
+  var mw = localStorage.getItem("eva_watch"); var ms = localStorage.getItem("eva_shorts");
+  var msubs = localStorage.getItem("eva_subs");
+  if (msubs) { document.getElementById("msubsInp").value = msubs; }
+  if (mw) { document.getElementById("mwInp").value = mw; }
+  if (ms) { document.getElementById("msInp").value = ms; }
+  if (mw || ms || msubs) updateMono();
+}
+
+function showKeyOk(yes) {
+  var el = document.getElementById("keyOk");
+  if (yes) el.classList.add("show"); else el.classList.remove("show");
+}
+
+function updateModels() {
+  var p = document.getElementById("provSel").value;
+  var sel = document.getElementById("mdlSel");
+  var html = "";
+  for (var i = 0; i < MODELS[p].length; i++) {
+    html += "<option value=\"" + MODELS[p][i].v + "\">" + MODELS[p][i].l + "</option>";
+  }
+  sel.innerHTML = html;
+  document.getElementById("apiKey").placeholder = (p === "claude") ? "sk-ant-..." : "AIza...";
+}
+
+function setupTabs() {
+  var tabs = ["gen","coach","diag","mono","guide"];
+  for (var i = 0; i < tabs.length; i++) {
+    (function(id) {
+      document.getElementById("TAB"+id).addEventListener("click", function() {
+        document.querySelectorAll(".panel").forEach(function(p) { p.classList.remove("on"); });
+        document.querySelectorAll(".tab").forEach(function(t) { t.classList.remove("on"); });
+        document.getElementById("PAN"+id).classList.add("on");
+        document.getElementById("TAB"+id).classList.add("on");
+      });
+    })(tabs[i]);
+  }
+}
+
+function setupLangBtns() {
+  var langs = ["Francais","English","Espanol","Deutsch","Arabe","Wolof"];
+  for (var i = 0; i < langs.length; i++) {
+    (function(l) {
+      var el = document.getElementById("LANG_"+l);
+      if (!el) return;
+      el.addEventListener("click", function() {
+        selectedLang = l;
+        document.querySelectorAll(".lbtn").forEach(function(b) { b.classList.remove("on"); });
+        this.classList.add("on");
+      });
+    })(langs[i]);
+  }
+}
+
+function setupFmtBtns() {
+  document.getElementById("BTNshort").addEventListener("click", function() {
+    selectedFmt = "9:16";
+    document.getElementById("BTNshort").classList.add("on");
+    document.getElementById("BTNlong").classList.remove("on");
+  });
+  document.getElementById("BTNlong").addEventListener("click", function() {
+    selectedFmt = "16:9";
+    document.getElementById("BTNlong").classList.add("on");
+    document.getElementById("BTNshort").classList.remove("on");
+  });
+}
+
+function setupToggles() {
+  document.getElementById("TRKfoot").addEventListener("click", function() {
+    footOn = !footOn;
+    document.getElementById("TRKfoot").classList.toggle("tg", footOn);
+    document.getElementById("LBLfoot").classList.toggle("tg", footOn);
+    document.getElementById("PILLfoot").classList.toggle("sg", footOn);
+  });
+  document.getElementById("TRKnarr").addEventListener("click", function() {
+    narrOn = !narrOn;
+    document.getElementById("TRKnarr").classList.toggle("tp", narrOn);
+    document.getElementById("LBLnarr").classList.toggle("tp", narrOn);
+    document.getElementById("PILLnarr").classList.toggle("sp", narrOn);
+  });
+}
+
+function setupTemplates() {
+  for (var i = 0; i < TEMPLATES.length; i++) {
+    (function(idx) {
+      document.getElementById("TPL"+idx).addEventListener("click", function() {
+        var t = TEMPLATES[idx];
+        document.getElementById("f1").value = t.f1;
+        document.getElementById("f2").value = t.f2;
+        document.getElementById("f3").value = t.f3;
+        document.getElementById("TABgen").click();
+        document.getElementById("f1").scrollIntoView({behavior:"smooth", block:"center"});
+      });
+    })(i);
+  }
+}
+
+function dlGuide() {
+  try {
+    var bc = atob(PDF_B64); var ba = new Uint8Array(bc.length);
+    for (var i = 0; i < bc.length; i++) ba[i] = bc.charCodeAt(i);
+    var url = URL.createObjectURL(new Blob([ba], {type:"application/pdf"}));
+    var a = document.createElement("a"); a.href = url; a.download = "EVA_V10_Guide.pdf";
+    document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+  } catch(e) { alert("Erreur PDF : " + e.message); }
+}
+
+function setupGuide() {
+  document.getElementById("BTNdlGuide1").addEventListener("click", dlGuide);
+  document.getElementById("BTNdlGuide2").addEventListener("click", dlGuide);
+}
+
+function getProfiles() { return JSON.parse(localStorage.getItem(PKEY) || "[]"); }
+function saveProfs(ps) { localStorage.setItem(PKEY, JSON.stringify(ps)); }
+
+function renderProfiles() {
+  var ps = getProfiles(); var grid = document.getElementById("pgrid"); var html = "";
+  for (var i = 0; i < ps.length; i++) {
+    var isOn = activeProfile && activeProfile.name === ps[i].name;
+    html += "<div class=\"pc"+(isOn?" on":"")+"\" data-pidx=\""+i+"\">";
+    html += "<button class=\"pc-del\" data-didx=\""+i+"\">x</button>";
+    html += "<div class=\"pc-name\">"+ps[i].name+"</div>";
+    html += "<div class=\"pc-niche\">"+ps[i].niche+"</div></div>";
+  }
+  grid.innerHTML = html;
+  grid.querySelectorAll(".pc").forEach(function(el) {
+    el.addEventListener("click", function(e) {
+      if (e.target.hasAttribute("data-didx")) return;
+      selectProfile(parseInt(this.getAttribute("data-pidx")));
+    });
+  });
+  grid.querySelectorAll(".pc-del").forEach(function(btn) {
+    btn.addEventListener("click", function(e) {
+      e.stopPropagation(); deleteProfile(parseInt(this.getAttribute("data-didx")));
+    });
+  });
+}
+
+function selectProfile(i) {
+  activeProfile = getProfiles()[i];
+  if (activeProfile.audience) document.getElementById("f5").value = activeProfile.audience;
+  if (activeProfile.niche) document.getElementById("f4").value = "Niche : "+activeProfile.niche+". "+(activeProfile.mono||"");
+  document.getElementById("apname").textContent = activeProfile.name;
+  document.getElementById("apbar").style.display = "flex";
+  renderProfiles(); document.getElementById("TABgen").click();
+}
+
+function deleteProfile(i) {
+  var ps = getProfiles(); ps.splice(i,1); saveProfs(ps);
+  if (activeProfile) {
+    var found = false;
+    for (var j=0;j<ps.length;j++) { if(ps[j].name===activeProfile.name){found=true;break;} }
+    if (!found) { activeProfile=null; document.getElementById("apbar").style.display="none"; }
+  }
+  renderProfiles();
+}
+
+function setupCoachPanel() {
+  document.getElementById("BTNaddProfile").addEventListener("click", function() {
+    var f=document.getElementById("pform"); f.style.display="flex"; f.style.flexDirection="column";
+  });
+  document.getElementById("BTNsaveProfile").addEventListener("click", function() {
+    var p = {
+      name:document.getElementById("pn").value.trim(),
+      niche:document.getElementById("pniche").value.trim(),
+      best:document.getElementById("pbest").value.trim(),
+      audience:document.getElementById("paud").value.trim(),
+      pillars:document.getElementById("ppil").value.trim(),
+      mono:document.getElementById("pmono").value.trim()
+    };
+    if(!p.name){alert("Donne un nom a ce profil.");return;}
+    var ps=getProfiles(); ps.push(p); saveProfs(ps);
+    document.getElementById("pform").style.display="none";
+    ["pn","pniche","pbest","paud","ppil","pmono"].forEach(function(id){document.getElementById(id).value="";});
+    renderProfiles();
+    alert("Profil \""+p.name+"\" enregistre. Clique sur la carte du profil pour l activer - il auto-remplira les cases 04 et 05 de la Generation.");
+  });
+  document.getElementById("BTNcancelProfile").addEventListener("click", function() {
+    document.getElementById("pform").style.display="none";
+  });
+  document.getElementById("BTNcoach").addEventListener("click", runCoach);
+  document.getElementById("BTNchangeProfile").addEventListener("click", function() {
+    document.getElementById("TABcoach").click();
+  });
+}
+
+async function callAPI(prompt) {
+  var key=document.getElementById("apiKey").value.trim();
+  var provider=document.getElementById("provSel").value;
+  var model=document.getElementById("mdlSel").value;
+  if(!key) throw new Error("Cle API manquante. Entre ta cle en haut de la page.");
+  if(provider==="claude") {
+    if(!key.startsWith("sk-ant-")) throw new Error("Cle Anthropic invalide - doit commencer par sk-ant-");
+    var r=await fetch("https://api.anthropic.com/v1/messages",{
+      method:"POST",
+      headers:{"Content-Type":"application/json","x-api-key":key,"anthropic-version":"2023-06-01"},
+      body:JSON.stringify({model:model,max_tokens:8000,messages:[{role:"user",content:prompt}]})
+    });
+    if(!r.ok){
+      var e=await r.json().catch(function(){return{};});
+      var tips={401:"Cle invalide",429:"Quota depasse",529:"Surcharge - attends 1-2 min"};
+      var msg=(e&&e.error&&e.error.message)?e.error.message:("Erreur "+r.status);
+      throw new Error(msg+(tips[r.status]?" - "+tips[r.status]:""));
+    }
+    var d=await r.json();
+    var found=d.content&&d.content.find(function(b){return b.type==="text";});
+    return found?found.text:"";
+  } else {
+    var r=await fetch("https://generativelanguage.googleapis.com/v1beta/models/"+model+":generateContent?key="+key,{
+      method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{temperature:0.82,maxOutputTokens:8000}})
+    });
+    if(!r.ok){
+      var e=await r.json().catch(function(){return{};});
+      var tips={403:"Cle invalide",429:"Quota depasse"};
+      var msg=(e&&e.error&&e.error.message)?e.error.message:("Erreur "+r.status);
+      throw new Error(msg+(tips[r.status]?" - "+tips[r.status]:""));
+    }
+    var d=await r.json();
+    return (d.candidates&&d.candidates[0]&&d.candidates[0].content&&d.candidates[0].content.parts&&d.candidates[0].content.parts[0])?d.candidates[0].content.parts[0].text:"";
+  }
+}
+
+function showErr(cid,msg) {
+  var z=document.getElementById(cid); var old=z.querySelector(".ebox"); if(old) old.remove();
+  var d=document.createElement("div"); d.className="ebox";
+  d.innerHTML="<span style=\"font-size:18px\">!</span><pre>"+msg+"</pre>"; z.prepend(d);
+}
+
+function makeSpin(){var d=document.createElement("div");d.className="spin";return d;}
+
+function restoreBoltIcon(btn,iconId) {
+  var sp=btn.querySelector(".spin"); if(!sp) return;
+  var svg=document.createElementNS("http://www.w3.org/2000/svg","svg");
+  svg.id=iconId; svg.setAttribute("width","17"); svg.setAttribute("height","17");
+  svg.setAttribute("viewBox","0 0 24 24"); svg.setAttribute("fill","none");
+  svg.setAttribute("stroke","currentColor"); svg.setAttribute("stroke-width","2.5");
+  svg.setAttribute("stroke-linecap","round"); svg.setAttribute("stroke-linejoin","round");
+  var poly=document.createElementNS("http://www.w3.org/2000/svg","polygon");
+  poly.setAttribute("points","13 2 3 14 12 14 11 22 21 10 12 10 13 2");
+  svg.appendChild(poly); sp.replaceWith(svg);
+}
+
+async function runCoach() {
+  var subject=document.getElementById("csubj").value.trim();
+  if(!subject){alert("Entre ton idee de sujet d abord.");return;}
+  var btn=document.getElementById("BTNcoach"); var txt=document.getElementById("coachTxt");
+  btn.disabled=true; txt.textContent="Analyse en cours...";
+  var icon=document.getElementById("coachIcon"); var sp=makeSpin(); icon.replaceWith(sp);
+  var profile=activeProfile||{name:"Createur YouTube",niche:"Contenu digital et outils en ligne",
+    best:"Non renseigne",audience:"Createurs de contenu cherchant a monetiser leur chaine",
+    pillars:"Outils IA - Automation - Monetisation",mono:"En cours de monetisation"};
+  var prompt="Tu es un expert en strategie YouTube virale.\n\nPROFIL DU CREATEUR :\nNom : "+profile.name+"\nNiche : "+profile.niche+"\nMeilleures videos : "+profile.best+"\nAudience : "+profile.audience+"\nPiliers : "+profile.pillars+"\nStatut : "+profile.mono+"\n\nSUJET SOUMIS : \""+subject+"\"\n\nANALYSE EN 4 PARTIES :\n\nPARTIE 1 - VERDICT VIRAL\nNote de viralite : X/10. Explication precise en 2-3 phrases de pourquoi ce sujet marche ou non pour ce createur.\n\nPARTIE 2 - ANGLE OPTIMAL\nReecris le sujet avec la formule la plus efficace parmi :\n- J ai obtenu RESULTAT CHIFFRE en DUREE grace a METHODE (preuve vecue)\n- J ai teste OUTIL pendant DUREE - voici ce que personne ne dit (analyse d expert)\n- ARRETEZ de MAUVAISE PRATIQUE - Faites SOLUTION en DUREE (ordre radical)\n\nPARTIE 3 - CALIBRATION DES 6 CASES\nCase 01 Titre : titre optimise, max 60 caracteres, avec chiffre concret et tension\nCase 02 SEO : 5 a 8 mots-cles pertinents, separes par des virgules\nCase 03 Idees brutes : 3 a 4 points cles a couvrir dans la video\nCase 04 Contexte chaine : phrase contexte adaptee a ce createur\nCase 05 Persona : description precise de l audience pour ce sujet specifique\nCase 06 Redirection : suggestion de video logique dans la meme niche\n\nPARTIE 4 - ALERTE\nSi la note est inferieure a 6, propose 2 sujets alternatifs plus forts avec leurs titres optimises.";
+  try {
+    var text=await callAPI(prompt);
+    coachCache=text;
+    var out=document.getElementById("coachOut");
+    out.innerHTML="<div class=\"cbox diag\"><div style=\"font-size:10px;font-weight:900;color:var(--pu);text-transform:uppercase;letter-spacing:1px;margin-bottom:9px;font-family:'DM Mono',monospace\">Analyse Coach IA</div><div class=\"prose\">"+marked.parse(text)+"</div><div style=\"margin-top:12px;display:flex;gap:6px;flex-wrap:wrap\"><button class=\"sb sb-bl\" id=\"BTNapplyCoach\">Appliquer dans les 6 cases et generer</button><button class=\"sb sb-gh\" id=\"BTNgoGen\">Voir les cases</button></div></div>";
+    document.getElementById("BTNapplyCoach").addEventListener("click",function(){applyCoachToForm();document.getElementById("TABgen").click();});
+    document.getElementById("BTNgoGen").addEventListener("click",function(){document.getElementById("TABgen").click();});
+  } catch(e){showErr("coachOut",e.message);}
+  finally {
+    btn.disabled=false; txt.textContent="Analyser le potentiel viral + Calibrer les 6 cases";
+    var sp2=btn.querySelector(".spin");
+    if(sp2){
+      var svg=document.createElementNS("http://www.w3.org/2000/svg","svg");
+      svg.id="coachIcon";svg.setAttribute("width","16");svg.setAttribute("height","16");svg.setAttribute("viewBox","0 0 24 24");svg.setAttribute("fill","none");svg.setAttribute("stroke","currentColor");svg.setAttribute("stroke-width","2.5");svg.setAttribute("stroke-linecap","round");svg.setAttribute("stroke-linejoin","round");
+      var path=document.createElementNS("http://www.w3.org/2000/svg","path");path.setAttribute("d","M12 2L2 7l10 5 10-5-10-5M2 17l10 5 10-5M2 12l10 5 10-5");svg.appendChild(path);sp2.replaceWith(svg);
+    }
+  }
+}
+
+function extractField(text,label) {
+  var re=new RegExp(label+"[^:]*:\\s*([^\\n]+)","i"); var m=text.match(re);
+  return m?m[1].trim():"";
+}
+
+function applyCoachToForm() {
+  if(!coachCache) return; var t=coachCache;
+  var c1=extractField(t,"Case 01 Titre")||extractField(t,"Case 01");
+  var c2=extractField(t,"Case 02 SEO")||extractField(t,"Case 02");
+  var c3=extractField(t,"Case 03 Id")||extractField(t,"Case 03");
+  var c4=extractField(t,"Case 04 Contexte")||extractField(t,"Case 04");
+  var c5=extractField(t,"Case 05 Persona")||extractField(t,"Case 05");
+  var c6=extractField(t,"Case 06 Redirection")||extractField(t,"Case 06");
+  if(c1) document.getElementById("f1").value=c1;
+  if(c2) document.getElementById("f2").value=c2;
+  if(c3) document.getElementById("f3").value=c3;
+  if(c4) document.getElementById("f4").value=c4;
+  if(c5) document.getElementById("f5").value=c5;
+  if(c6) document.getElementById("f6").value=c6;
+}
+
+function setupDiagPanel() {
+  document.getElementById("BTNdiag").addEventListener("click", runDiag);
+}
+
+async function runDiag() {
+  var data=document.getElementById("diagIn").value.trim();
+  if(!data){alert("Colle tes donnees de chaine d abord.");return;}
+  var btn=document.getElementById("BTNdiag"); var txt=document.getElementById("diagTxt");
+  btn.disabled=true; txt.textContent="Analyse en cours...";
+  var icon=document.getElementById("diagIcon"); var sp=makeSpin(); icon.replaceWith(sp);
+  var prompt="Tu es un expert en strategie YouTube virale. Fais un diagnostic complet de cette chaine.\n\nDONNEES :\n"+data+"\n\nDIAGNOSTIC EN 5 PARTIES :\n\nPARTIE 1 - DIAGNOSTIC BRUTAL\n- Les 3 vrais problemes qui bloquent la croissance (par ordre d impact)\n- Ce qui marche deja (a capitaliser absolument)\n- Ce qui ne marche pas (a arreter immediatement)\n\nPARTIE 2 - ANALYSE DES PERFORMANCES\nTableau Markdown : | Video | Vues | Analyse | Lecon cle |\n\nPARTIE 3 - 10 SUJETS VIRAUX CALIBRES\nPour chaque sujet :\n- Titre optimise (max 60 car, avec chiffre ou tension forte)\n- Formule : Preuve vecue / Analyse d expert / Ordre radical\n- Potentiel viral : X/10\n- Pourquoi ca va marcher sur cette chaine specifiquement\n\nPARTIE 4 - PLAN 30 JOURS\nSemaine 1, 2, 3, 4 : 3 actions concretes et mesurables par semaine\n\nPARTIE 5 - REGLE D OR\n1 phrase qui resume la strategie gagnante pour cette chaine.";
+  try {
+    var text=await callAPI(prompt);
+    document.getElementById("diagOut").innerHTML="<div class=\"cbox diag\" style=\"margin-top:8px\"><div style=\"font-size:10px;font-weight:900;color:var(--pu);text-transform:uppercase;letter-spacing:1px;margin-bottom:9px;font-family:'DM Mono',monospace\">Diagnostic complet</div><div class=\"prose\">"+marked.parse(text)+"</div></div>";
+  } catch(e){showErr("diagOut",e.message);}
+  finally {
+    btn.disabled=false; txt.textContent="Lancer le diagnostic complet";
+    var sp2=btn.querySelector(".spin");
+    if(sp2){
+      var svg=document.createElementNS("http://www.w3.org/2000/svg","svg");
+      svg.id="diagIcon";svg.setAttribute("width","16");svg.setAttribute("height","16");svg.setAttribute("viewBox","0 0 24 24");svg.setAttribute("fill","none");svg.setAttribute("stroke","currentColor");svg.setAttribute("stroke-width","2.5");svg.setAttribute("stroke-linecap","round");svg.setAttribute("stroke-linejoin","round");
+      var c=document.createElementNS("http://www.w3.org/2000/svg","circle");c.setAttribute("cx","11");c.setAttribute("cy","11");c.setAttribute("r","8");
+      var l=document.createElementNS("http://www.w3.org/2000/svg","line");l.setAttribute("x1","21");l.setAttribute("y1","21");l.setAttribute("x2","16.65");l.setAttribute("y2","16.65");
+      svg.appendChild(c);svg.appendChild(l);sp2.replaceWith(svg);
+    }
+  }
+}
+
+function setupMonoPanel() {
+  document.getElementById("msubsInp").addEventListener("input",updateMono);
+  document.getElementById("mwInp").addEventListener("input",updateMono);
+  document.getElementById("msInp").addEventListener("input",updateMono);
+  document.getElementById("BTNmonoPlan").addEventListener("click",runMonoPlan);
+  var types=["shorts","long","both"];
+  var ids=["MTYPEshorts","MTYPElong","MTYPEboth"];
+  for(var i=0;i<types.length;i++){
+    (function(t,id){
+      document.getElementById(id).addEventListener("click",function(){
+        monoType=t;
+        document.querySelectorAll(".mono-type-btn").forEach(function(b){b.classList.remove("on");});
+        this.classList.add("on");
+        var lbl=document.getElementById("monoViewsLabel");
+        var hint=document.getElementById("monoViewsHint");
+        var slbl=document.getElementById("msub-label");
+        if(t==="shorts"){
+          lbl.textContent="Vues Shorts sur les 90 derniers jours";
+          hint.textContent="Pour les Shorts : requis 10 millions de vues sur 90 jours.";
+          slbl.textContent="Requis Shorts : 10M / 90j";
+        } else if(t==="long"){
+          lbl.textContent="Vues moyennes par video longue";
+          hint.textContent="Pour les videos longues : le watchtime est le critere principal. Entre tes vues moyennes pour estimer ton watchtime cumule.";
+          slbl.textContent="Vues longues (watchtime)";
+        } else {
+          lbl.textContent="Vues Shorts 90j (ou vues longues moyennes)";
+          hint.textContent="Entre les vues Shorts si c est ton format principal, ou les vues moyennes de tes videos longues.";
+          slbl.textContent="Vues combinées";
+        }
+        updateMono();
+      });
+    })(types[i],ids[i]);
+  }
+}
+
+function updateMono() {
+  var subs=parseFloat(document.getElementById("msubsInp").value)||0;
+  var w=parseFloat(document.getElementById("mwInp").value)||0;
+  var s=parseFloat(document.getElementById("msInp").value)||0;
+  localStorage.setItem("eva_subs",subs);localStorage.setItem("eva_watch",w);localStorage.setItem("eva_shorts",s);
+  var sp=Math.min(100,Math.round((subs/1000)*100));
+  document.getElementById("msubsval").textContent=subs.toLocaleString();
+  document.getElementById("msubsbar").style.width=sp+"%";
+  document.getElementById("msubspct").textContent=sp+"% - "+(subs>=1000?"Objectif atteint !":(1000-subs).toLocaleString()+" restants");
+  var wp=Math.min(100,Math.round((w/4000)*100));
+  document.getElementById("mwval").textContent=w.toLocaleString()+"h";
+  document.getElementById("mwbar").style.width=wp+"%";
+  document.getElementById("mwpct").textContent=wp+"% - "+(4000-w>0?(4000-w).toLocaleString()+"h restantes":"Objectif atteint !");
+  var missingW=Math.max(0,4000-w); var vids=missingW>0?Math.ceil((missingW*60)/45):0;
+  var viewTarget=monoType==="shorts"?10000000:0;
+  var viewPct=viewTarget>0?Math.min(100,Math.round((s/viewTarget)*100)):0;
+  document.getElementById("msval").textContent=s>=1000000?(s/1000000).toFixed(1)+"M":s.toLocaleString();
+  document.getElementById("msbar").style.width=viewPct+"%";
+  if(viewTarget>0){
+    document.getElementById("mspct").textContent=viewPct+"% - "+(viewTarget-s>0?((viewTarget-s)/1000000).toFixed(1)+"M restantes":"Objectif atteint !");
+  } else {
+    document.getElementById("mspct").textContent="Watchtime = critere principal";
+  }
+  var subsOk=subs>=1000; var watchOk=w>=4000;
+  if(subsOk&&watchOk){
+    document.getElementById("monoStatus").textContent="Eligible !"; document.getElementById("monoStatus").style.color="var(--gr)";
+    document.getElementById("monoStatusDetail").textContent="Tu as atteint les seuils Long Format. Fais ta demande dans YouTube Studio.";
+  } else {
+    document.getElementById("monoStatus").textContent="En cours"; document.getElementById("monoStatus").style.color="var(--am)";
+    var detail=[];
+    if(!subsOk) detail.push((1000-subs).toLocaleString()+" abonnes manquants");
+    if(!watchOk) detail.push(missingW.toLocaleString()+"h watchtime manquantes (~"+vids+" videos longues a creer)");
+    document.getElementById("monoStatusDetail").innerHTML=detail.join("<br>");
+  }
+  var calc=document.getElementById("monoCalc"); calc.style.display="block";
+  calc.innerHTML="<div style=\"font-size:10px;font-weight:900;color:var(--bl);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;font-family:'DM Mono',monospace\">Calcul rapide</div><p style=\"font-size:13px;color:var(--dk);font-weight:600\">Il te manque <strong>"+missingW.toLocaleString()+"h</strong> de watchtime et <strong>"+Math.max(0,1000-subs).toLocaleString()+"</strong> abonnes.<br>Avec 45 min de watchtime moyen par video : <strong>"+vids+" videos longues</strong> bien executees.<br>Avec 2 videos/semaine : <strong>"+Math.ceil(vids/2)+" semaines</strong> pour atteindre l objectif watchtime.</p>";
+}
+
+async function runMonoPlan() {
+  var subs=document.getElementById("msubsInp").value||"non renseigne";
+  var w=document.getElementById("mwInp").value||"non renseigne";
+  var s=document.getElementById("msInp").value||"non renseigne";
+  var typeLabel=monoType==="shorts"?"Shorts principalement":monoType==="long"?"Videos longues principalement":"Shorts et videos longues";
+  var profile=activeProfile||{name:"Createur YouTube",niche:"Contenu digital"};
+  var prompt="Tu es coach YouTube monetisation.\n\nPROFIL :\nChaine : "+profile.name+"\nNiche : "+profile.niche+"\nAbonnes actuels : "+subs+" (requis : 1000)\nWatchtime actuel : "+w+"h (requis : 4000h)\nVues videos : "+s+"\nType de contenu : "+typeLabel+"\n\nPlan de monetisation sur 12 semaines ULTRA-PRECIS :\n1. PRIORITE ABSOLUE : Long format ou Shorts en priorite ? Pourquoi selon les chiffres ?\n2. PLAN SEMAINE PAR SEMAINE : 3 actions concretes mesurables par semaine\n3. TYPES DE SUJETS qui maximisent le watchtime par video pour cette niche\n4. SUJETS A EVITER qui tuent le watchtime\n5. DATE REALISTE D ELIGIBILITE si le createur applique tout le plan";
+  var out=document.getElementById("monoOut");
+  out.innerHTML="<div class=\"cbox\"><div class=\"spin\" style=\"margin:0 auto;border-color:rgba(79,70,229,.3);border-top-color:var(--pu)\"></div></div>";
+  try {
+    var text=await callAPI(prompt);
+    out.innerHTML="<div class=\"cbox\" style=\"margin-top:8px\"><div style=\"font-size:10px;font-weight:900;color:var(--bl);text-transform:uppercase;letter-spacing:1px;margin-bottom:9px;font-family:'DM Mono',monospace\">Plan Monetisation Personnalise</div><div class=\"prose\">"+marked.parse(text)+"</div></div>";
+  } catch(e){showErr("monoOut",e.message);}
+}
+
+function setupGenBtn() {
+  document.getElementById("BTNgenerate").addEventListener("click",runGenerate);
+}
+
+async function runGenerate() {
+  var btn=document.getElementById("BTNgenerate"); var txt=document.getElementById("genTxt");
+  var topic=document.getElementById("f1").value.trim();
+  if(!topic){showErr("genOut","Le champ 01 (Titre ou Angle) est obligatoire pour generer.");return;}
+  btn.disabled=true; txt.textContent="Generation en cours...";
+  var icon=document.getElementById("genIcon"); var sp=makeSpin(); icon.replaceWith(sp);
+  var creator=document.getElementById("f4").value.trim();
+  var persona=document.getElementById("f5").value.trim();
+  var seo=document.getElementById("f2").value.trim();
+  var src=document.getElementById("f3").value.trim();
+  var next=document.getElementById("f6").value.trim();
+  var ange=document.getElementById("optAnge").checked;
+  var isLong=selectedFmt==="16:9";
+  var fmtLbl=isLong?"Video longue 10-15 min 16:9":"Short viral 55-60s 9:16";
+  var angeBlock=ange?"INSERTION OBLIGATOIRE au milieu du script : Mais avant cela, lequel choisirais-tu ? Si tu as choisi l ange, like et abonne-toi. Partage et laisse un coeur en commentaire. Puissent de nombreux anges prier pour toi et ta famille.":"";
+  var footBlock=footOn?"Vocabulaire football prioritaire : matchs, clubs, joueurs, tactiques, stades, CAN, Champions League.":"";
+  var narrBlock=narrOn?"Structure le script en ACTES numerotes avec courbe emotionnelle. Ajoute des marqueurs PAUSE aux moments dramatiques.":"";
+  var ARCH_LONG="ARCHITECTURE 12 BLOCS 10-15 min 16:9.\nBLOC 1 Hook+Preuve 0:00-0:20 : Zero bonjour. Preuve visible screenshot ou chiffre dans les 8 premieres secondes AVANT toute explication. Premiere phrase = titre.\nBLOC 2 Autorite 0:20-0:45 : Chiffres concrets uniquement. Detail lie au persona.\nBLOC 3 Identification emotionnelle 0:45-1:10 : Vocabulaire exact du persona. C est exactement moi.\nBLOC 4 CTA precoce 1:10-1:30 : Action de valeur concrete. Question a epingler generee ici.\nBLOC 5 Annonce structure 1:30-1:50 : Les X points... je commence par le plus contre-intuitif.\nBLOCS 6-10 Chapitres : Titre fort, Probleme, Explication+exemple+chiffres, Application, Micro-cliffhanger.\nBOUCLE RETENTION toutes les 90 secondes marqueur [--- BOUCLE RETENTION ---].\nBLOC 11 Synthese : 3 bullets percutants.\nBLOC 12 CTA Final : [--- QUESTION EPINGLE ---] + abonnement + [--- REDIRECTION ---]. JAMAIS merci d avoir regarde.";
+  var ARCH_SHORT="ARCHITECTURE 6 BLOCS 55-60s 9:16.\nBLOC 1 Hook 0-3s : Stop scroll. Zero bonjour. Clip max 2.5s. Sous-titre plein ecran frame 1.\nBLOC 2 Pattern Interrupt 3-8s : Coupe seche, son surprise.\nBLOC 3 Probleme 8-20s : Identification emotionnelle. C est moi.\nBLOC 4 Valeur 20-42s : 3 tips numerotes OU demo. Montre, ne dis pas.\nBLOC 5 Preuve 42-55s : Chiffre concret. Screenshot ou before-after.\nBLOC 6 CTA+Loop 55-60s : UNE seule action. Derniere frame = premiere frame.";
+  var prompt="Tu es EVA V.10 ULTRA, expert YouTube viralite et monetisation.\nLangue : "+selectedLang+"\n\nANTI-BAN OBLIGATOIRE : Remplace argent gratuit par complement de revenu, methode secrete par strategie eprouvee, revenus garantis par potentiel de rentabilite. Pas de spam hack crack. Tags sans #, hashtags avec # max 5.\n\n"+(isLong?ARCH_LONG:ARCH_SHORT)+"\n\nOBJECTIF : Pack Empire complet optimise pour VIRALITE et WATCHTIME.\n\nCONTEXTE CREATEUR : "+(creator||"Createur de contenu YouTube cherchant a maximiser ses vues et son watchtime")+"\nAUDIENCE CIBLE : "+(persona||"Audience en recherche d informations pratiques et actionables")+"\nSUJET : "+topic+"\nSEO : "+(seo||"genere les mots-cles les plus pertinents pour ce sujet")+"\nIDEES SOURCES : "+(src||"genere le contenu le plus pertinent pour ce sujet")+"\nVIDEO REDIRECTION : "+(next||"suggere une video logique dans la meme niche")+"\nFORMAT : "+selectedFmt+" - "+fmtLbl+"\n"+(footBlock?footBlock+"\n":"")+(narrBlock?narrBlock+"\n":"")+(angeBlock?angeBlock+"\n":"")+"\n\nGENERE CES 6 BLOCS :\n\nBLOC 1 - 3 ANGLES TITRES ET MINIATURES\nYouTube permet 3 titres + 3 miniatures simultanement (test A/B natif). Genere 3 angles DISTINCTS.\n\nREGLES OBLIGATOIRES :\n1. TENSION INCOMPLETE : Le texte de la miniature NE REPETE JAMAIS le titre. Il cree une question ouverte differente qui force le clic.\nBON exemple : Titre Pourquoi tes videos font 0 vue + Miniature TON ERREUR CACHEE = tension = clic\nMAUVAIS exemple : Titre Pourquoi tes videos font 0 vue + Miniature 0 VUE = repetition = pas de clic\n2. LISIBILITE MOBILE : Texte miniature MAX 5 mots. Police grasse majuscules. Visage min 40% de la surface.\n3. BRIEF MINIATURE pour Nano Banana Pro ou outil IA d image :\nStyle global, Fond, Visage (position, pourcentage de surface minimum 40%, expression precise et exageree), Texte exact max 5 mots couleur et position, Element graphique si utile, Validation lisibilite mobile.\n4. COHERENCE 5 PREMIERES SECONDES : Ce que promet la miniature apparait dans les 5 premieres secondes de la video.\n\nANGLE 1 - LA PREUVE CONCRETE (audience rationnelle qui veut des chiffres)\nTitre YouTube : max 60 car, chiffre concret + tension + benefice clair\nTension titre et miniature : 1 phrase, quelle question s ouvre dans la tete du spectateur ?\nBrief miniature Nano Banana "+selectedFmt+" : Style, Fond, Visage, Texte exact, Element, Validation mobile\nCoherence 5 premieres secondes :\nQuestion a epingler en commentaire :\n\nANGLE 2 - LE SECRET DE L EXPERT (audience emotionnelle qui veut le raccourci)\n[memes 5 elements]\n\nANGLE 3 - L URGENCE ET LE DECLIC (audience impulsive qui reagit a la peur de rater)\n[memes 5 elements]\n\nTABLEAU RECAP TEST A/B :\n| # | Titre max 60 car | Texte miniature | Audience ciblee | Emotion principale |\n|---|---|---|---|---|\n| 1 | | | Rationnelle | |\n| 2 | | | Emotionnelle | |\n| 3 | | | Impulsive | |\nInstruction publication : Publie les 3 simultanement dans YouTube Studio - Test et Comparer. Gagnant a 72h. Si aucun ne depasse 4% CTR : garde le gagnant relatif et change uniquement le texte de la miniature.\n\nBLOC 2 - SEO COMPLET ANTI-BAN\nDescription YouTube : 200 premiers caracteres = mots-cles prioritaires, corps 150 mots, minimum 6 chapitres horodates, maximum 5 hashtags #\nTags YouTube : sans #, virgule-separes, minimum 15 tags\n\nBLOC 3 - SCRIPT VOIX-OFF COMPLET "+fmtLbl+"\nRegles : texte brut uniquement, zero parentheses dans le texte prononce, tu direct, vocabulaire SAFE et Anti-Ban\nMarqueurs : [--- BOUCLE RETENTION ---] toutes les 90s / [--- CTA ---] / [--- QUESTION EPINGLE ---] / [--- REDIRECTION ---]\nPreuve visible dans les 8 premieres secondes. Architecture "+(isLong?"12 blocs":"6 blocs")+" respectee.\n\nBLOC 4 - STORYBOARD VISUEL\nTableau Markdown immediat commencant directement par l en-tete.\n"+(isLong?"| Temps | Action Visuelle et Texte Ecran | Type de plan | Son et Musique |\n|---|---|---|---|\nMin 12 lignes couvrant 0:00 a 14:00":"| Temps | Bloc | Action Visuelle et Texte Ecran | Son et Effets CapCut |\n|---|---|---|---|\n| 0:00-0:03 | HOOK | Clip max 2.5s sous-titre plein ecran | Clip + SFX |\n| 0:03-0:08 | PATTERN INTERRUPT | Coupe seche | Glitch SFX |\n| 0:08-0:20 | PROBLEME | 3 coupes rapides | Musique -18dB |\n| 0:20-0:42 | VALEUR | 3 tips numerotes | Beat sync |\n| 0:42-0:55 | PREUVE | Zoom screenshot | Son validation |\n| 0:55-1:00 | CTA+LOOP | Fond colore texte bounce | +2dB |")+"\n\nBLOC 5 - CONFORMITE ANTI-BAN\n| Terme evite | Substitution | Zone |\n|---|---|---|\nMinimum 5 lignes avec les termes specifiques de ce sujet\n\nBLOC 6 - FICHE DE LANCEMENT\nHeure de publication recommandee pour maximiser la portee initiale :\nResultat CTR attendu a 72h selon angle gagnant :\nCommentaire epingle a copier-coller des la publication :\nOu partager cette video (3 communautes ou groupes precis) :\nAction si aucun angle ne depasse 4% CTR a 72h :\nEstimation watchtime moyen par vue pour cette video (important pour la monetisation) :";
+  try {
+    var text=await callAPI(prompt);
+    var resultId="r"+Date.now();
+    var modesHtml="";
+    if(footOn) modesHtml+="<span class=\"pill pg\">Football</span>";
+    if(narrOn) modesHtml+="<span class=\"pill pp\">Narration</span>";
+    if(ange) modesHtml+="<span class=\"pill pa\">Ange</span>";
+    var safeTitle=topic.replace(/[^a-zA-Z0-9 ]/g,"").substring(0,40);
+    var card=document.createElement("div"); card.className="rcard";
+    card.innerHTML="<div class=\"rhead\"><div class=\"rmeta\"><span style=\"font-size:11px;font-weight:900;color:var(--bl);text-transform:uppercase\">Pack Empire "+selectedLang+"</span><span class=\"pill pb\">"+(isLong?"LONG 16:9":"SHORT 9:16")+"</span><span class=\"pill pg\">Anti-Ban</span><span class=\"pill pg\">A/B YouTube</span><span class=\"pill pa\">V.10 ULTRA</span>"+modesHtml+"</div><button class=\"sb sb-bl\" data-rid=\""+resultId+"\" data-title=\""+safeTitle+"\">Exporter TXT</button></div><div class=\"rbody\"><div id=\""+resultId+"\" class=\"prose\">"+marked.parse(text)+"</div></div>";
+    card.querySelector("[data-rid]").addEventListener("click",function(){
+      var id=this.getAttribute("data-rid"); var title=this.getAttribute("data-title");
+      var blob=new Blob([document.getElementById(id).innerText],{type:"text/plain;charset=utf-8"});
+      var url=URL.createObjectURL(blob); var a=document.createElement("a"); a.href=url;
+      a.download="EVA_"+title.replace(/[^a-zA-Z0-9]/g,"_")+".txt"; a.click(); URL.revokeObjectURL(url);
+    });
+    var out=document.getElementById("genOut");
+    out.querySelectorAll(".ebox").forEach(function(e){e.remove();});
+    out.prepend(card); card.scrollIntoView({behavior:"smooth",block:"start"});
+  } catch(e){showErr("genOut",e.message);}
+  finally {
+    btn.disabled=false; txt.textContent="Generer le Pack Complet";
+    restoreBoltIcon(btn,"genIcon");
+  }
+}
+
+return {init:init};
+})();
+
+window.addEventListener("DOMContentLoaded",function(){EVA.init();});
+</script>
+</body>
+</html>
