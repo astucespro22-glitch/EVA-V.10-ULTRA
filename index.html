@@ -165,8 +165,8 @@ body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--tx)
   <div class="ag">
     <label>Fournisseur IA</label>
     <select id="provSel" class="api-sel">
+      <option value="gemini">Gemini (Google) - Recommande</option>
       <option value="claude">Claude (Anthropic)</option>
-      <option value="gemini">Gemini (Google)</option>
     </select>
   </div>
   <div class="ag">
@@ -176,11 +176,13 @@ body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--tx)
   <div class="ag">
     <label>Cle API</label>
     <div style="display:flex;gap:6px;align-items:center">
-      <input type="password" id="apiKey" class="api-inp" placeholder="sk-ant-... ou AIza..." style="width:200px">
-      <button id="BTNsaveKey" style="padding:8px 14px;background:var(--bl);color:#fff;border:none;border-radius:10px;font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:800;cursor:pointer;transition:.2s;white-space:nowrap;text-transform:uppercase;letter-spacing:.5px">Valider</button>
+      <input type="password" id="apiKey" class="api-inp" placeholder="Colle ta cle ici..." style="width:210px">
+      <button id="BTNsaveKey" style="padding:8px 16px;background:#64748b;color:#fff;border:none;border-radius:10px;font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:800;cursor:pointer;transition:all .3s;white-space:nowrap;text-transform:uppercase;letter-spacing:.5px;display:flex;align-items:center;gap:5px" title="Cliquer pour valider la cle">
+        <span id="keyBtnIcon">&#128274;</span>
+        <span id="keyBtnTxt">Valider</span>
+      </button>
     </div>
-    <div id="keyOk" class="key-ok" style="display:none">&#10003; Cle validee et sauvegardee</div>
-    <div id="keyErr" style="display:none;align-items:center;gap:5px;background:var(--rll);border:1px solid var(--rlb);color:#991b1b;font-size:10px;font-weight:800;padding:4px 9px;border-radius:999px;margin-top:3px;font-family:'DM Mono',monospace">&#10005; Format invalide</div>
+    <div id="keyStatus" style="font-size:10px;font-weight:800;margin-top:4px;font-family:'DM Mono',monospace;display:none"></div>
   </div>
 </div>
 <nav class="nav">
@@ -199,6 +201,13 @@ body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--tx)
     <button class="tab" id="TABguide"><span class="tdot"></span> Guide</button>
   </div>
 </nav>
+
+<div id="corsWarn" style="display:none;background:#fef3c7;border-bottom:2px solid #f59e0b;padding:10px 22px;font-size:12px;font-weight:700;color:#92400e;align-items:center;gap:10px;flex-wrap:wrap">
+  <span style="font-size:16px">&#9888;</span>
+  <span><strong>Mode fichier local detecte (file://).</strong> Les appels API sont bloques par le navigateur dans ce mode.</span>
+  <span style="background:#d97706;color:#fff;padding:3px 10px;border-radius:999px;font-size:11px;white-space:nowrap">&#8594; Utilise Gemini ou ouvre depuis claude.ai</span>
+  <button onclick="document.getElementById('corsWarn').style.display='none'" style="margin-left:auto;background:none;border:none;cursor:pointer;font-size:18px;color:#92400e;line-height:1">&#10005;</button>
+</div>
 
 <div id="PANgen" class="panel on">
 <div class="stack">
@@ -498,18 +507,20 @@ var TEMPLATES = [
 function init() {
   if (typeof marked !== "undefined") marked.setOptions({gfm:true, breaks:false});
   var k = localStorage.getItem(SKEY);
-  if (k && k.length > 8) { document.getElementById("apiKey").value = k; showKeyOk(true); }
-  document.getElementById("BTNsaveKey").addEventListener("click", function() {
-    var val = document.getElementById("apiKey").value.trim();
-    if (!val) { alert("Entre ta cle API avant de valider."); return; }
-    localStorage.setItem(SKEY, val);
-    showKeyOk(true); showKeyErr(false);
-  });
+  if (k && k.length > 8) {
+    document.getElementById("apiKey").value = k;
+    setKeyBtn("saved", "Cle sauvegardee - prete a utiliser");
+  }
+  document.getElementById("BTNsaveKey").addEventListener("click", validateAndSaveKey);
   document.getElementById("apiKey").addEventListener("keydown", function(e) {
-    if (e.key === "Enter") document.getElementById("BTNsaveKey").click();
+    if (e.key === "Enter") validateAndSaveKey();
   });
   updateModels();
-  document.getElementById("provSel").addEventListener("change", updateModels);
+  document.getElementById("provSel").addEventListener("change", function() {
+    updateModels();
+    var cur = document.getElementById("apiKey").value.trim();
+    if (!cur) setKeyBtn("idle","");
+  });
   setupTabs(); setupLangBtns(); setupFmtBtns(); setupToggles();
   setupTemplates(); setupGenBtn(); setupCoachPanel();
   setupDiagPanel(); setupMonoPanel(); setupGuide();
@@ -522,14 +533,104 @@ function init() {
   if (mw || ms || msubs) updateMono();
 }
 
-function showKeyOk(yes) {
-  var el = document.getElementById("keyOk");
-  el.style.display = yes ? "inline-flex" : "none";
+function setKeyBtn(state, msg) {
+  var btn = document.getElementById("BTNsaveKey");
+  var icon = document.getElementById("keyBtnIcon");
+  var txt = document.getElementById("keyBtnTxt");
+  var status = document.getElementById("keyStatus");
+  if (state === "loading") {
+    btn.style.background = "#64748b";
+    btn.disabled = true;
+    icon.textContent = "...";
+    txt.textContent = "Validation...";
+    status.style.display = "none";
+  } else if (state === "valid") {
+    btn.style.background = "#059669";
+    btn.disabled = false;
+    icon.textContent = "\u2713";
+    txt.textContent = "Validee";
+    status.style.display = "block";
+    status.style.color = "#065f46";
+    status.textContent = msg || "Cle validee et sauvegardee - prete a utiliser";
+  } else if (state === "saved") {
+    btn.style.background = "#059669";
+    btn.disabled = false;
+    icon.textContent = "\u2713";
+    txt.textContent = "Validee";
+    status.style.display = "block";
+    status.style.color = "#065f46";
+    status.textContent = msg || "Cle sauvegardee - prete a utiliser";
+  } else if (state === "error") {
+    btn.style.background = "#ef4444";
+    btn.disabled = false;
+    icon.textContent = "\u2715";
+    txt.textContent = "Erreur";
+    status.style.display = "block";
+    status.style.color = "#991b1b";
+    status.textContent = msg || "Cle invalide ou erreur reseau";
+  } else {
+    btn.style.background = "#64748b";
+    btn.disabled = false;
+    icon.textContent = "\uD83D\uDD12";
+    txt.textContent = "Valider";
+    status.style.display = "none";
+  }
 }
-function showKeyErr(yes) {
-  var el = document.getElementById("keyErr");
-  el.style.display = yes ? "inline-flex" : "none";
+
+async function validateAndSaveKey() {
+  var val = document.getElementById("apiKey").value.trim();
+  var provider = document.getElementById("provSel").value;
+  var model = document.getElementById("mdlSel").value;
+  if (!val) { setKeyBtn("error", "Entre ta cle avant de valider."); return; }
+  setKeyBtn("loading");
+  try {
+    if (provider === "gemini") {
+      var r = await fetch("https://generativelanguage.googleapis.com/v1beta/models/" + model + ":generateContent?key=" + val, {
+        method: "POST", headers: {"Content-Type":"application/json"},
+        body: JSON.stringify({contents:[{parts:[{text:"Reponds juste: OK"}]}], generationConfig:{maxOutputTokens:5}})
+      });
+      if (r.status === 400 || r.ok) {
+        localStorage.setItem(SKEY, val);
+        setKeyBtn("valid", "Cle Gemini validee et sauvegardee");
+      } else if (r.status === 403 || r.status === 401) {
+        setKeyBtn("error", "Cle Gemini invalide - verifie sur aistudio.google.com");
+      } else {
+        var d = await r.json().catch(function(){return{};});
+        var m = (d && d.error && d.error.message) ? d.error.message : ("Erreur " + r.status);
+        if (r.status === 429) { localStorage.setItem(SKEY, val); setKeyBtn("valid", "Cle Gemini sauvegardee (quota atteint mais cle reconnue)"); }
+        else setKeyBtn("error", m);
+      }
+    } else {
+      var r = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: {"Content-Type":"application/json","x-api-key":val,"anthropic-version":"2023-06-01"},
+        body: JSON.stringify({model:model,max_tokens:5,messages:[{role:"user",content:"OK"}]})
+      });
+      if (r.ok || r.status === 400) {
+        localStorage.setItem(SKEY, val);
+        setKeyBtn("valid", "Cle Claude validee et sauvegardee");
+      } else if (r.status === 401 || r.status === 403) {
+        setKeyBtn("error", "Cle Claude invalide - verifie sur console.anthropic.com");
+      } else if (r.status === 429) {
+        localStorage.setItem(SKEY, val);
+        setKeyBtn("valid", "Cle Claude sauvegardee (quota momentane mais cle reconnue)");
+      } else {
+        localStorage.setItem(SKEY, val);
+        setKeyBtn("saved", "Cle sauvegardee - tu peux generer");
+      }
+    }
+  } catch(err) {
+    if (err.message && err.message.includes("fetch")) {
+      localStorage.setItem(SKEY, val);
+      setKeyBtn("saved", "Cle sauvegardee (validation reseau impossible depuis GitHub Pages - cle utilisee directement)");
+    } else {
+      setKeyBtn("error", err.message || "Erreur de validation");
+    }
+  }
 }
+
+function showKeyOk(yes) { if(yes) setKeyBtn("saved"); }
+function showKeyErr(yes) { if(yes) setKeyBtn("error"); }
 
 function updateModels() {
   var p = document.getElementById("provSel").value;
@@ -704,35 +805,49 @@ function setupCoachPanel() {
 }
 
 async function callAPI(prompt) {
-  var key=document.getElementById("apiKey").value.trim();
+  var key = document.getElementById("apiKey").value.trim() || localStorage.getItem(SKEY) || "";
   var provider=document.getElementById("provSel").value;
   var model=document.getElementById("mdlSel").value;
-  if(!key) throw new Error("Cle API manquante. Entre ta cle en haut de la page.");
+  if(!key) throw new Error("Cle API manquante. Colle ta cle dans le champ en haut et clique Valider.");
+
   if(provider==="claude") {
-    var r=await fetch("https://api.anthropic.com/v1/messages",{
-      method:"POST",
-      headers:{"Content-Type":"application/json","x-api-key":key,"anthropic-version":"2023-06-01"},
-      body:JSON.stringify({model:model,max_tokens:8000,messages:[{role:"user",content:prompt}]})
-    });
+    var r;
+    try {
+      r=await fetch("https://api.anthropic.com/v1/messages",{
+        method:"POST",
+        headers:{"Content-Type":"application/json","x-api-key":key,"anthropic-version":"2023-06-01"},
+        body:JSON.stringify({model:model,max_tokens:8000,messages:[{role:"user",content:prompt}]})
+      });
+    } catch(fetchErr) {
+      if (fetchErr.message && (fetchErr.message.includes("fetch") || fetchErr.message.includes("network") || fetchErr.message.includes("CORS"))) {
+        throw new Error("Erreur reseau : verifie ta connexion internet et que la cle est bien validee.\nSi le probleme persiste, essaie de passer sur Gemini dans le selecteur Fournisseur IA.");
+      }
+      throw fetchErr;
+    }
     if(!r.ok){
       var e=await r.json().catch(function(){return{};});
-      var tips={401:"Cle invalide",429:"Quota depasse",529:"Surcharge - attends 1-2 min"};
-      var msg=(e&&e.error&&e.error.message)?e.error.message:("Erreur "+r.status);
-      throw new Error(msg+(tips[r.status]?" - "+tips[r.status]:""));
+      var tips={401:"Cle Claude invalide - verifie sur console.anthropic.com",403:"Acces refuse - verifie ta cle",429:"Quota depasse ou credits insuffisants - verifie sur console.anthropic.com",529:"Serveur Anthropic surcharge - attends 1-2 min et reessaie"};
+      var msg=(e&&e.error&&e.error.message)?e.error.message:("Erreur HTTP "+r.status);
+      throw new Error(msg+(tips[r.status]?"\n\nSolution : "+tips[r.status]:""));
     }
     var d=await r.json();
     var found=d.content&&d.content.find(function(b){return b.type==="text";});
     return found?found.text:"";
   } else {
-    var r=await fetch("https://generativelanguage.googleapis.com/v1beta/models/"+model+":generateContent?key="+key,{
-      method:"POST",headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{temperature:0.82,maxOutputTokens:8000}})
-    });
+    var r;
+    try {
+      r=await fetch("https://generativelanguage.googleapis.com/v1beta/models/"+model+":generateContent?key="+key,{
+        method:"POST",headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{temperature:0.82,maxOutputTokens:8000}})
+      });
+    } catch(fetchErr) {
+      throw new Error(CORS_MSG);
+    }
     if(!r.ok){
       var e=await r.json().catch(function(){return{};});
-      var tips={403:"Cle invalide",429:"Quota depasse"};
-      var msg=(e&&e.error&&e.error.message)?e.error.message:("Erreur "+r.status);
-      throw new Error(msg+(tips[r.status]?" - "+tips[r.status]:""));
+      var tips={400:"Requete invalide - verifie le format",403:"Cle Gemini invalide - verifie sur aistudio.google.com",429:"Quota Gemini depasse - attends ou utilise un autre modele"};
+      var msg=(e&&e.error&&e.error.message)?e.error.message:("Erreur HTTP "+r.status);
+      throw new Error(msg+(tips[r.status]?"\n\nSolution : "+tips[r.status]:""));
     }
     var d=await r.json();
     return (d.candidates&&d.candidates[0]&&d.candidates[0].content&&d.candidates[0].content.parts&&d.candidates[0].content.parts[0])?d.candidates[0].content.parts[0].text:"";
@@ -978,7 +1093,13 @@ async function runGenerate() {
 return {init:init};
 })();
 
-window.addEventListener("DOMContentLoaded",function(){EVA.init();});
+window.addEventListener("DOMContentLoaded",function(){
+  EVA.init();
+  if(window.location.protocol === "file:") {
+    var b = document.getElementById("corsWarn");
+    if(b) b.style.display = "flex";
+  }
+});
 </script>
 </body>
 </html>
